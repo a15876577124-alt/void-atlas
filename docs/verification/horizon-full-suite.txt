@@ -1,0 +1,90 @@
+
+> void-atlas@1.0.0 test
+> npm run test:unit && npm run test:e2e
+
+
+> void-atlas@1.0.0 test:unit
+> node --test tests/*.test.js
+
+✔ geometry is deterministic, finite and bounded at every budget (99.776272ms)
+✔ initial budgets respect small devices and scale monotonically (2.027506ms)
+✔ governor reduces sustained slow rendering and never oscillates upward (0.922727ms)
+✔ hidden-tab gaps and warm-up do not lower quality (0.22738ms)
+✔ very slow continuous rendering still triggers a lower budget (0.135112ms)
+✔ deep links select real scenes and unknown hashes remain usable (0.12711ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 156.480207
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+> void-atlas@1.0.0 test:e2e
+> playwright test
+
+[WebServer] (node:14492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:14505) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [plugin builtin:vite-reporter]
+[WebServer] (!) Some chunks are larger than 500 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] npm notice
+[WebServer] npm notice New major version of npm available! 11.9.0 -> 12.2.0
+[WebServer] npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+[WebServer] npm notice To update run: npm install -g npm@12.2.0
+[WebServer] npm notice
+[WebServer] (node:14531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:14544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 22 tests using 1 worker
+
+(node:14569) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/canvas-controls.spec.js:13:1 › Canvas orbit, zoom and pointer release remain functional (6.6s)
+  ✓   2 [desktop] › tests/fallback.spec.js:3:1 › Canvas edition retains scenes, motion, screenshot export and layout (31.9s)
+  ✓   3 [desktop] › tests/fallback.spec.js:54:1 › reduced motion and keyboard navigation are usable (5.1s)
+  ✓   4 [desktop] › tests/horizon-depth.spec.js:32:1 › event horizon occludes the far disk while the near disk crosses in front at side angles (24.5s)
+  ✓   5 [desktop] › tests/webgl.spec.js:36:1 › GPU renders distinct nonblank scenes and a valid PNG export (3.0s)
+  ✓   6 [desktop] › tests/webgl.spec.js:65:1 › motion, orbit, wheel or pinch zoom, and camera reset work (5.7s)
+  ✓   7 [desktop] › tests/webgl.spec.js:105:1 › rapid scene changes transition through illuminated frames while paused (6.0s)
+  ✓   8 [desktop] › tests/webgl.spec.js:122:1 › WebGL loss falls back without losing scene state, then restores (3.9s)
+  ✓   9 [desktop] › tests/webgl.spec.js:144:1 › unsupported WebGL uses the working Canvas edition with an honest message (6.0s)
+  ✓  10 [desktop] › tests/webgl.spec.js:161:1 › detail budgets and responsive layouts remain usable (5.2s)
+  ✓  11 [desktop] › tests/webgl.spec.js:189:1 › lightweight edition and explicit WebGL retry preserve the chosen scene (3.5s)
+(node:15292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  12 [mobile] › tests/canvas-controls.spec.js:13:1 › Canvas orbit, zoom and pointer release remain functional (3.6s)
+  ✓  13 [mobile] › tests/fallback.spec.js:3:1 › Canvas edition retains scenes, motion, screenshot export and layout (22.7s)
+  ✓  14 [mobile] › tests/fallback.spec.js:54:1 › reduced motion and keyboard navigation are usable (5.1s)
+  ✓  15 [mobile] › tests/horizon-depth.spec.js:32:1 › event horizon occludes the far disk while the near disk crosses in front at side angles (20.2s)
+  ✓  16 [mobile] › tests/webgl.spec.js:36:1 › GPU renders distinct nonblank scenes and a valid PNG export (4.3s)
+  ✓  17 [mobile] › tests/webgl.spec.js:65:1 › motion, orbit, wheel or pinch zoom, and camera reset work (4.5s)
+  ✓  18 [mobile] › tests/webgl.spec.js:105:1 › rapid scene changes transition through illuminated frames while paused (4.5s)
+  ✓  19 [mobile] › tests/webgl.spec.js:122:1 › WebGL loss falls back without losing scene state, then restores (3.8s)
+  ✓  20 [mobile] › tests/webgl.spec.js:144:1 › unsupported WebGL uses the working Canvas edition with an honest message (5.0s)
+  ✓  21 [mobile] › tests/webgl.spec.js:161:1 › detail budgets and responsive layouts remain usable (5.6s)
+  ✓  22 [mobile] › tests/webgl.spec.js:189:1 › lightweight edition and explicit WebGL retry preserve the chosen scene (2.8s)
+
+  22 passed (3.1m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

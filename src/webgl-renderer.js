@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createParticleData } from './particles.js';
 import { profiles } from './quality.js';
-import { particleVertex, particleFragment, planeVertex, diskFragment, cloudFragment, photonFragment } from './shaders.js';
+import { particleVertex, particleFragment, planeVertex, diskFragment, cloudFragment, horizonVertex, horizonFragment, rimFragment, lensFragment } from './shaders.js';
 
 export function createWebGLRenderer(canvas, quality) {
   // Test before constructing Three's renderer so unsupported browsers fail quietly.
@@ -30,6 +30,7 @@ export function createWebGLRenderer(canvas, quality) {
   const uniforms = {
     uTime: { value: 0 }, uDpr: { value: 1 }, uScale: { value: 1 },
     uWeights: { value: new THREE.Vector3(1, 0, 0) },
+    uDiskView: { value: .44 },
   };
   const data = createParticleData(profiles.high.count);
   const geometry = new THREE.BufferGeometry();
@@ -51,17 +52,37 @@ export function createWebGLRenderer(canvas, quality) {
   }));
   const disk = makePlane(diskFragment);
   disk.rotation.x = -Math.PI / 2;
+  // The disk and particles share world origin and the XZ plane. The sphere's
+  // depth splits both into near/far fragments, even while orbiting underneath.
+  disk.material.depthTest = true;
   disk.renderOrder = -1;
   scene.add(disk);
   const clouds = makePlane(cloudFragment);
   clouds.scale.set(1, .75, 1);
   clouds.renderOrder = -2;
   scene.add(clouds);
-  const photon = makePlane(photonFragment);
-  photon.scale.setScalar(2.3 / 14 * 2);
-  photon.material.blending = THREE.NormalBlending;
-  photon.renderOrder = 3;
-  scene.add(photon);
+  const horizonGeometry = new THREE.SphereGeometry(1.02, 96, 64);
+  const horizon = new THREE.Mesh(horizonGeometry, new THREE.ShaderMaterial({
+    uniforms, vertexShader: horizonVertex, fragmentShader: horizonFragment,
+    depthWrite: true, depthTest: true,
+  }));
+  scene.add(horizon);
+  const rim = new THREE.Mesh(horizonGeometry, new THREE.ShaderMaterial({
+    uniforms, vertexShader: horizonVertex, fragmentShader: rimFragment,
+    transparent: true, depthWrite: false, depthTest: true, blending: THREE.AdditiveBlending,
+  }));
+  rim.scale.setScalar(1.065);
+  rim.renderOrder = -3;
+  scene.add(rim);
+  // An apparent image of the far disk, not another occluding black billboard.
+  // Its inner edge is hidden by the real sphere; near disk fragments draw over it.
+  const lensGeometry = new THREE.PlaneGeometry(4, 4);
+  const lens = new THREE.Mesh(lensGeometry, new THREE.ShaderMaterial({
+    uniforms, vertexShader: planeVertex, fragmentShader: lensFragment,
+    transparent: true, depthWrite: false, depthTest: true, blending: THREE.AdditiveBlending,
+  }));
+  lens.renderOrder = -2;
+  scene.add(lens);
 
   // A separate fixed star field adds depth without any texture requests.
   const starsGeometry = new THREE.BufferGeometry();
@@ -112,7 +133,9 @@ export function createWebGLRenderer(canvas, quality) {
   function dispose() {
     controls.dispose();
     geometry.dispose(); material.dispose(); planeGeometry.dispose();
-    disk.material.dispose(); clouds.material.dispose(); photon.material.dispose();
+    disk.material.dispose(); clouds.material.dispose();
+    horizonGeometry.dispose(); horizon.material.dispose(); rim.material.dispose();
+    lensGeometry.dispose(); lens.material.dispose();
     starsGeometry.dispose(); starsMaterial.dispose(); renderer.dispose();
     // Release healthy, retired contexts; leave lost ones restorable by the browser.
     if (!context.isContextLost()) renderer.forceContextLoss();
@@ -139,10 +162,12 @@ export function createWebGLRenderer(canvas, quality) {
       uniforms.uTime.value = time;
       disk.visible = weights[0] + weights[1] > .001;
       clouds.visible = weights[2] > .001;
-      photon.visible = weights[1] > .001;
+      horizon.visible = rim.visible = lens.visible = weights[1] > .001;
       clouds.quaternion.copy(camera.quaternion);
       clouds.position.copy(camera.position).normalize().multiplyScalar(-2);
-      photon.quaternion.copy(camera.quaternion);
+      uniforms.uDiskView.value = camera.position.y / camera.position.length();
+      lens.quaternion.copy(camera.quaternion);
+      lens.position.copy(camera.position).normalize().multiplyScalar(-.18);
       renderer.render(scene, camera);
     },
   };

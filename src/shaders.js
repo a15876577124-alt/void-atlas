@@ -120,19 +120,68 @@ void main() {
 }
 `;
 
-export const photonFragment = /* glsl */`
+export const horizonVertex = /* glsl */`
+varying vec3 vNormal;
+varying vec3 vView;
+void main() {
+  vec4 mv = modelViewMatrix * vec4(position, 1.);
+  vNormal = normalMatrix * normal;
+  vView = -mv.xyz;
+  gl_Position = projectionMatrix * mv;
+}
+`;
+
+export const horizonFragment = /* glsl */`
+uniform vec3 uWeights;
+varying vec3 vNormal;
+varying vec3 vView;
+void main() {
+  // Coverage fade also fades depth during scene morphs. A partially transparent
+  // depth-writing sphere would otherwise cut an abrupt hole in the other scenes.
+  float coverage=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))));
+  if(coverage>=uWeights.y)discard;
+  float facing=max(0.,dot(normalize(vNormal),normalize(vView)));
+  float ring=exp(-pow((facing-.095)*24.,2.))*.9;
+  gl_FragColor=vec4(vec3(.0003,.0002,.00015)+vec3(1.,.73,.43)*ring,1.);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+
+export const rimFragment = /* glsl */`
+uniform vec3 uWeights;
+varying vec3 vNormal;
+varying vec3 vView;
+void main() {
+  float facing=max(0.,dot(normalize(vNormal),normalize(vView)));
+  float glow=pow(1.-facing,5.)*.16;
+  gl_FragColor=vec4(vec3(1.,.65,.32)*glow*uWeights.y,1.);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+
+export const lensFragment = /* glsl */`
+uniform float uTime;
+uniform float uDiskView;
 uniform vec3 uWeights;
 varying vec2 vUv;
+${noise}
 void main() {
-  vec2 p=(vUv-.5)*2.; float r=length(p);
-  float core=1.-smoothstep(.435,.445,r);
-  float ring=exp(-pow((r-.46)*110.,2.));
-  float halo=exp(-pow((r-.47)*15.,2.))*.18;
-  float arc=.6+.4*smoothstep(-.7,.7,p.y);
-  vec3 color=vec3(1.,.73,.43)*(ring+halo)*arc;
-  float alpha=max(core,clamp(ring+halo,0.,1.))*uWeights.y;
-  if(alpha<.002)discard;
-  gl_FragColor=vec4(color,alpha);
+  vec2 p=(vUv-.5)*4.;
+  // Fade away face-on and mirror the brighter far-side arc below the disk when
+  // viewed from underneath. This is an artistic lens image, not ray tracing.
+  float inclination=1.-smoothstep(.15,.85,abs(uDiskView));
+  float r=length(p), a=atan(p.y,p.x);
+  float band=exp(-pow((r-1.19)*15.,2.));
+  float above=smoothstep(-.12,.12,uDiskView);
+  float upper=smoothstep(.03,.7,p.y), lower=smoothstep(.03,.7,-p.y);
+  float farArc=mix(lower,upper,above);
+  float secondary=mix(upper,lower,above)*.18;
+  float grain=fbm(vec2(a*5.-uTime*.12,r*22.));
+  float lanes=.65+.35*sin(r*160.+grain*4.);
+  vec3 color=vec3(1.,.62,.27)*band*(farArc+secondary)*lanes*(.3+grain)*.75;
+  gl_FragColor=vec4(color*inclination*uWeights.y,1.);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }

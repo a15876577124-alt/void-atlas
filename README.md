@@ -74,18 +74,18 @@ To reproduce the diagnostic measurement, first run `npm run preview -- --port 41
 ## Architecture and scope
 
 - [`src/webgl-renderer.js`](src/webgl-renderer.js): Three renderer, orbit camera, geometry, quality budgets and resource disposal.
-- [`src/shaders.js`](src/shaders.js): GPU particle motion, spiral dust, accretion disk, photon silhouette and procedural nebula emission.
+- [`src/shaders.js`](src/shaders.js): GPU particle motion, spiral dust, accretion disk, spherical event horizon, photon rim, far-side lens image and procedural nebula emission.
 - [`src/canvas-renderer.js`](src/canvas-renderer.js): independent compatibility renderer.
 - [`src/main.js`](src/main.js): shared controls, motion preferences, scene transitions and renderer recovery.
 - [`ART_DIRECTION.md`](ART_DIRECTION.md), [`REVIEW.md`](REVIEW.md), [`PORTFOLIO_CASE_STUDY.md`](PORTFOLIO_CASE_STUDY.md): visual rationale, review and portfolio notes.
 
-The nebula is volumetric-inspired (a procedural emission billboard plus a 3D point volume), not a ray-marched volume. The horizon is a designed disk and photon-ring silhouette, not a relativistic simulation. Screenshots retain the drawing buffer for reliable exports; this trades some framebuffer memory for dependable capture. There is no heavy bloom chain, audio, video export or external model loading.
+Event Horizon uses a depth-writing sphere at the same world center as the XZ accretion disk and its 3D particle band. Depth testing splits the disk into visible near-side fragments and occluded far-side fragments at every orbit angle; there is no topmost black billboard. A faint, view-dependent image of the far disk supplies the lensing impression. See [the depth repair and captured orbit angles](docs/HORIZON_DEPTH.md).
+
+The nebula is volumetric-inspired (a procedural emission billboard plus a 3D point volume), not a ray-marched volume. The horizon's lens image is an artistic approximation, not a relativistic simulation. Screenshots retain the drawing buffer for reliable exports; this trades some framebuffer memory for dependable capture. There is no heavy bloom chain, audio, video export or external model loading.
 
 ## Hosting
 
 Build and upload the **contents** of `dist/` to a static host. On GitHub Pages, select an authenticated Actions/static-artifact publishing workflow and deploy the built directory, rather than the source root. On hosts with a build UI, use `npm ci && npm run build` and publish directory `dist`. Verify all three hash scenes and a downloaded PNG on the actual deployed URL.
-
-No deployment URL is claimed. This cloud session has no configured deployment-provider credentials, and its GitHub API request was denied. Local Git review and the production artifact are available; deployment and remote PR creation require working authorization through the chosen provider.
 
 ## Attribution
 

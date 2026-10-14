@@ -2,6 +2,14 @@
 
 Date: **2026-10-14**. These are local cloud-instance results, not deployment or real-device claims.
 
+## Event Horizon depth repair
+
+The subsequent depth repair passed **6 unit tests and 22 browser cases**, including new framebuffer occlusion checks for both mouse and native touch orbit. See the [full regression log](verification/horizon-full-suite.txt) and [angle-by-angle evidence](HORIZON_DEPTH.md). The original delivery results below remain historical evidence for the initial upgrade.
+
+A final lens-only polish makes the brighter arc swap smoothly when the camera crosses the disk plane. Both affected browser cases were then rerun successfully, with an additional exactly edge-on drag/capture: [2 passed](verification/horizon-final.txt). That command rebuilt the final production artifact. No runtime/console/HTTP errors occurred in these checks; the existing large-chunk build advisory remains. The complete suite above preceded this small shader polish.
+
+The sphere, disk and particle band now share a 3D center and use depth testing. Screenshots in `screenshots/horizon-depth/` show face-on, oblique, side and underside views; UI and palette were retained. Earlier `screenshots/horizon.png` and `horizon-mobile.png` document the original implementation, not this repair.
+
 ## Environment and reproduction
 
 - Linux, Node 24.19.0, npm 11.9.0, system Chromium 154.0.8037.57.
@@ -9,7 +17,7 @@ Date: **2026-10-14**. These are local cloud-instance results, not deployment or 
 - `npm ci --cache /workspace/.cache/npm` succeeded without changing the lockfile.
 - `npm test` executed the unit tests and rebuilt/served `dist` for browser tests. Software WebGL was explicitly enabled with headless ANGLE SwiftShader.
 
-## Results
+## Original upgrade results
 
 | Check | Executed result |
 | --- | --- |
@@ -39,7 +47,7 @@ Canvas reset tests compare the PNG export path. Repeated `getImageData` caused C
 
 ## Build and delivery
 
-Final Vite output (decimal kB):
+Original upgrade Vite output (decimal kB):
 
 | Asset | Raw | Gzip |
 | --- | ---: | ---: |
@@ -63,5 +71,5 @@ Screenshots in [screenshots/](screenshots/) are unedited captures of the actual 
 
 - Physical phones, mobile GPU thermal behavior, Safari/iOS, Firefox, HDR/color calibration, or a guaranteed 60 FPS.
 - Relativistic ray tracing or ray-marched cloud volumes.
-- Remote GitHub Actions execution, a pushed branch, a remote PR, or a publicly deployed preview. Git read access worked, but the GitHub repository API returned Forbidden; deployment-provider variables were absent.
+- Remote GitHub Actions execution or a publicly deployed preview. Local test success and Git publishing do not establish those outcomes.
 - Environment publication or restoration of this local branch in a new task. Updated installation and startup instructions were saved to the environment draft; saving the draft does not publish it or restart services.
