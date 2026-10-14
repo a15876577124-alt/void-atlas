@@ -1,7 +1,7 @@
 # Work execution brief — VOID ATLAS
 
 ## Goal
-Produce a polished, one-day, browser-first digital artwork that can be reviewed for a job portfolio. The initial canvas prototype exists in `index.html`. Its existence is not evidence of production readiness.
+Produce a polished, one-day, browser-first digital artwork that can be reviewed for a job portfolio. The initial Canvas prototype is now archived at `public/prototype.html`; the new `index.html` is the Vite/Three.js application. Production evidence is recorded in `docs/VERIFICATION.md`; the existence of either artifact alone is not evidence of readiness.
 
 ## Tasks for Work
 1. Inspect this repository and preview the current prototype; do not invent successful tests.

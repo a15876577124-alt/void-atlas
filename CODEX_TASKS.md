@@ -2,7 +2,7 @@
 
 Repository: void-atlas (connect an accessible GitHub repository in a published Codex Cloud environment).
 
-**Read README.md and WORK_BRIEF.md first. Existing index.html is a Canvas 2D demonstration, not a Three.js build.**
+**Current state:** `index.html` now starts the Vite/Three.js artwork. The original Canvas demonstration is preserved at `public/prototype.html`. Read README.md for actual commands and `docs/VERIFICATION.md` for executed evidence. The original P0/P1/P2 brief below is retained as the project's acceptance criteria, rather than a claim that every optional delivery target has been tested.
 
 ## P0: stable artifact (must complete first)
 - Ensure all scene buttons, pointer drag, scroll zoom, pause, screenshot, resizing work.
