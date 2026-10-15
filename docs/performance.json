@@ -1,0 +1,109 @@
+{
+  "measuredAt": "2026-10-14T16:28:08.492Z",
+  "browser": "System Chromium, headless ANGLE SwiftShader",
+  "note": "Software rendering and mobile emulation on a shared cloud host. RAF cadence is diagnostic, not a claim about physical devices or GPU execution time.",
+  "results": [
+    {
+      "device": "desktop",
+      "scene": "Spiral Galaxy",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "frames": 102,
+      "durationMs": 4063,
+      "frameCadenceFps": 25.1,
+      "p50FrameMs": 33.3,
+      "p95FrameMs": 87.9,
+      "startQuality": "balanced",
+      "endQuality": "low",
+      "telemetry": "WebGL / Light / 18,000 particles",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "device": "desktop",
+      "scene": "Event Horizon",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "frames": 116,
+      "durationMs": 4045,
+      "frameCadenceFps": 28.7,
+      "p50FrameMs": 31,
+      "p95FrameMs": 70.7,
+      "startQuality": "low",
+      "endQuality": "low",
+      "telemetry": "WebGL / Light / 18,000 particles",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "device": "desktop",
+      "scene": "Cosmic Nebula",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "frames": 85,
+      "durationMs": 4019,
+      "frameCadenceFps": 21.2,
+      "p50FrameMs": 43.9,
+      "p95FrameMs": 89,
+      "startQuality": "low",
+      "endQuality": "low",
+      "telemetry": "WebGL / Light / 18,000 particles",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "device": "mobile-emulation",
+      "scene": "Spiral Galaxy",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "frames": 164,
+      "durationMs": 4007,
+      "frameCadenceFps": 40.9,
+      "p50FrameMs": 21,
+      "p95FrameMs": 45.4,
+      "startQuality": "balanced",
+      "endQuality": "balanced",
+      "telemetry": "WebGL / Balanced / 42,000 particles",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "device": "mobile-emulation",
+      "scene": "Event Horizon",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "frames": 212,
+      "durationMs": 4004,
+      "frameCadenceFps": 53,
+      "p50FrameMs": 16.7,
+      "p95FrameMs": 37.7,
+      "startQuality": "balanced",
+      "endQuality": "low",
+      "telemetry": "WebGL / Light / 18,000 particles",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "device": "mobile-emulation",
+      "scene": "Cosmic Nebula",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "frames": 215,
+      "durationMs": 4004,
+      "frameCadenceFps": 53.7,
+      "p50FrameMs": 16.6,
+      "p95FrameMs": 33.1,
+      "startQuality": "low",
+      "endQuality": "low",
+      "telemetry": "WebGL / Light / 18,000 particles",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    }
+  ]
+}

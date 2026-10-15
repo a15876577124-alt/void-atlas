@@ -1,0 +1,129 @@
+[
+  {
+    "check": "desktop load and animation",
+    "result": "passed",
+    "detail": "5,700 particles; HTTP 200"
+  },
+  {
+    "check": "desktop pause and resume",
+    "result": "passed",
+    "detail": "animation advances and freezes as requested"
+  },
+  {
+    "check": "desktop three scenes",
+    "result": "passed",
+    "detail": "distinct nonblank canvases; scene titles and active buttons match"
+  },
+  {
+    "check": "desktop orbit",
+    "result": "passed",
+    "detail": "mouse drag changes canvas"
+  },
+  {
+    "check": "desktop zoom",
+    "result": "passed",
+    "detail": "wheel changes canvas"
+  },
+  {
+    "check": "desktop screenshot export",
+    "result": "passed",
+    "detail": {
+      "format": "PNG",
+      "size": [
+        1440,
+        900
+      ]
+    }
+  },
+  {
+    "check": "desktop layout",
+    "result": "passed",
+    "detail": {
+      "width": 1440,
+      "height": 900,
+      "scroll": 1440
+    }
+  },
+  {
+    "check": "live resize",
+    "result": "passed",
+    "detail": {
+      "width": 1024,
+      "height": 768,
+      "scroll": 1024
+    }
+  },
+  {
+    "check": "desktop runtime",
+    "result": "passed",
+    "detail": {
+      "javascript_errors": [],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "external_requests": []
+    }
+  },
+  {
+    "check": "mobile load and animation",
+    "result": "passed",
+    "detail": "2,100 particles; HTTP 200"
+  },
+  {
+    "check": "mobile pause and resume",
+    "result": "passed",
+    "detail": "animation advances and freezes as requested"
+  },
+  {
+    "check": "mobile three scenes",
+    "result": "passed",
+    "detail": "distinct nonblank canvases; scene titles and active buttons match"
+  },
+  {
+    "check": "mobile orbit",
+    "result": "passed",
+    "detail": "touch drag changes canvas"
+  },
+  {
+    "check": "mobile zoom",
+    "result": "passed",
+    "detail": "wheel changes canvas"
+  },
+  {
+    "check": "mobile screenshot export",
+    "result": "passed",
+    "detail": {
+      "format": "PNG",
+      "size": [
+        780,
+        1688
+      ]
+    }
+  },
+  {
+    "check": "mobile layout",
+    "result": "passed",
+    "detail": {
+      "width": 390,
+      "height": 844,
+      "scroll": 390
+    }
+  },
+  {
+    "check": "mobile runtime",
+    "result": "passed",
+    "detail": {
+      "javascript_errors": [],
+      "console_errors": [],
+      "external_requests": []
+    }
+  },
+  {
+    "check": "reduced motion",
+    "result": "passed",
+    "detail": {
+      "animation": "stopped",
+      "initial_button_label": "PAUSE"
+    }
+  }
+]
