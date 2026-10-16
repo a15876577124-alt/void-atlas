@@ -110,7 +110,7 @@ export function createWebGLRenderer(canvas, quality) {
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, profiles[currentQuality].dpr));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    camera.setViewOffset(w, h, -w * (mobile ? .04 : .145), -h * (mobile ? .07 : -.01), w, h);
+    camera.setViewOffset(w, h, -w * (mobile ? .04 : .145), -h * (mobile ? 0 : -.01), w, h);
     camera.updateProjectionMatrix();
     uniforms.uDpr.value = renderer.getPixelRatio();
     uniforms.uScale.value = Math.min(h / 900, 1.5);

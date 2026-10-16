@@ -43,7 +43,7 @@ button[hidden] { display: none; }
 h1 { font-family: Georgia,'Times New Roman',"Songti SC","Noto Serif SC","Source Han Serif SC",serif; font-weight: 400; font-size: clamp(54px,6.6vw,116px); letter-spacing: -.065em; line-height: .99; margin: 0 0 25px; text-wrap: balance; }
 h1 em, h2 em { font-weight: 400; color: #d9c2a6; }
 .description { font-size: 12px; line-height: 1.9; color: #b0b4b5; font-weight: 400; max-width: 310px; margin: 0; }
-.story-rule { font-size: 8px; letter-spacing: .2em; color: #8e979d; display: flex; align-items: center; gap: 12px; margin-top: 30px; }
+.story-rule { font-size: 9px; letter-spacing: .19em; color: #9aa4a8; display: flex; align-items: center; gap: 12px; margin-top: 30px; }
 .story-rule span { height: 1px; width: 32px; background: #a7a59b66; }
 .instrument-panel { position: fixed; right: 4%; top: 145px; z-index: 3; text-align: right; }
 .instrument-caption { font-size: 8px; letter-spacing: .2em; color: #818d95; }
@@ -157,7 +157,7 @@ html[lang="en"] .lang-switch .lang-en, html[lang="zh-CN"] .lang-switch .lang-zh 
   .render-status { bottom: 280px; right: 6%; max-width: 88%; font-size: 9px; }
   .retry { right: 6%; bottom: 232px; min-height: 30px; font-size: 10px; }
   .footer { left: 6%; right: 6%; bottom: max(18px,env(safe-area-inset-bottom)); }
-  .footer-top { font-size: 7px; letter-spacing: .11em; margin-bottom: 12px; }
+  .footer-top { font-size: 8px; letter-spacing: .12em; margin-bottom: 12px; }
   .orbit-hint { display: none !important; }
   .chapter { padding: 17px 10px !important; gap: 6px; align-items: flex-start; min-height: 82px; }
   .chapter:first-child { padding-left: 0 !important; }
