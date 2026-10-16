@@ -10,9 +10,9 @@ export function createParticleData(count, seed = 2311) {
   for (let i = 0; i < count; i++) {
     const t = i * 3, s = i * 4;
     const r = Math.pow(random(), .72) * 5.3;
-    const core = random() < .13;
+    const core = random() < .15;
     const arm = i % 4;
-    const a = arm * Math.PI / 2 + r * 1.14 + normal() * (.09 + r * .035);
+    const a = arm * Math.PI / 2 + r * 1.14 + normal() * (.07 + r * .028);
     const diffuse = random() < .14;
     const angle = diffuse ? random() * Math.PI * 2 : a;
     if (core) {
@@ -22,7 +22,7 @@ export function createParticleData(count, seed = 2311) {
       galaxy[t + 2] = cr * Math.sqrt(1 - cosTheta * cosTheta) * Math.sin(phi);
     } else {
       galaxy[t] = Math.cos(angle) * r;
-      galaxy[t + 1] = normal() * (.035 + (1 - r / 5.3) * .11);
+      galaxy[t + 1] = normal() * (.048 + (1 - r / 5.3) * .15);
       galaxy[t + 2] = Math.sin(angle) * r;
     }
     const ha = random() * Math.PI * 2, hr = 1.15 + Math.pow(random(), 1.8) * 4;
