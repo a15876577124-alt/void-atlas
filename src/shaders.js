@@ -103,6 +103,8 @@ void main() {
   float t=uTime*.018;
   vec2 q=vec2(fbm(p*1.2+t),fbm(p*1.4+vec2(4.2,-t)));
   float f=fbm(p*2.1+q*2.8);
+  float deep=fbm(p*.78-q*1.05+7.3);
+  float fine=fbm(p*4.8-q*1.7-t*2.2);
   float ridge=pow(1.-abs(f*2.-1.),3.);
   float edge=min(min(vUv.x,vUv.y),min(1.-vUv.x,1.-vUv.y));
   float mask=exp(-dot(p,p)*.42)*smoothstep(0.,.18,edge);
@@ -112,8 +114,10 @@ void main() {
   vec3 color=mix(cyan,rose,smoothstep(-.9,.9,p.y+q.y-.5));
   color=mix(color,gold,smoothstep(.6,1.6,p.x+q.x));
   color*=clouds*ridge*(.25+lane*1.4)*1.8;
+  color+=vec3(.028,.062,.092)*deep*mask*.55;
   float strands=pow(max(0.,1.-abs(f-.48)*14.),4.);
   color+=vec3(.15,.26,.31)*strands*mask*.08;
+  color+=vec3(.19,.17,.14)*pow(fine,3.)*clouds*.45;
   gl_FragColor=vec4(color*uWeights.z,1.);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
