@@ -1,3 +1,5 @@
+import { refineGalaxy } from './galaxy-structure.js';
+
 // Seeded geometry: generated once, never rewritten per animation frame.
 export function createParticleData(count, seed = 2311) {
   const galaxy = new Float32Array(count * 3);
@@ -44,5 +46,6 @@ export function createParticleData(count, seed = 2311) {
     seeds[s + 2] = .28 + Math.pow(random(), 3) * 1.15;
     seeds[s + 3] = random();
   }
+  refineGalaxy(galaxy, seed);
   return { galaxy, horizon, nebula, seeds };
 }
