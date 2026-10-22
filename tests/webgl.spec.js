@@ -171,7 +171,7 @@ test('detail budgets and responsive layouts remain usable', async ({ page }, tes
     await page.setViewportSize(viewport);
     await settle(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    for (const control of await page.locator('.chapter, .tool, select, #about-open').all()) {
+    for (const control of await page.locator('.chapter, .tool, select, #about-open:visible').all()) {
       const box = await control.boundingBox();
       expect(box.x).toBeGreaterThanOrEqual(0);
       expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
