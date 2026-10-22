@@ -52,7 +52,7 @@ function setStatus(key) {
 }
 function updateTelemetry() {
   if (!engine) return;
-  const labelKey = engine.mode === 'webgl' ? profiles[currentQuality].label.toLowerCase() : 'low';
+  const labelKey = engine.mode === 'webgl' ? currentQuality : 'low';
   const quality = t(`quality.${labelKey}`);
   $('#telemetry').textContent = `${engine.mode === 'webgl' ? 'WebGL' : 'Canvas'} / ${quality} / ${engine.count.toLocaleString('en-US')} ${t('telemetry.particles')}`;
   document.body.dataset.renderer = engine.mode; document.body.dataset.quality = currentQuality;
