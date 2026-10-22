@@ -6,6 +6,14 @@ uniform float uTime;
 uniform float uDpr;
 uniform float uScale;
 uniform vec3 uWeights;
+precision highp sampler3D;
+uniform sampler3D uCloudVolume;
+float cloudDensity(vec3 world) {
+  vec3 uv=world/vec3(5.8,4.2,3.6)*.5+.5;
+  uv+=sin(uv.yzx*4.+uTime*.025)*.008;
+  return texture(uCloudVolume,uv).r;
+}
+
 varying vec3 vColor;
 varying float vAlpha;
 varying float vSpark;
@@ -25,6 +33,19 @@ void main() {
   vec3 nc = mix(vec3(.17, .64, .76), vec3(.88, .35, .58), smoothstep(-1.3, 1.5, aNebula.y + aSeed.x));
   vColor = gc * uWeights.x + hc * uWeights.y + nc * uWeights.z;
   vAlpha = .3 + aSeed.y * .7;
+  // Integrate only the cloud in FRONT of each star. Keep at least 45% of its light.
+  if(uWeights.z>.001) {
+    vec3 ray=normalize(n-cameraPosition), scale=vec3(5.8,4.2,3.6);
+    vec3 ro=cameraPosition/scale, rd=ray/scale;
+    float aa=dot(rd,rd),bb=dot(ro,rd),cc=dot(ro,ro)-1.,disc=bb*bb-aa*cc;
+    if(disc>0.) {
+      float entry=max(0.,(-bb-sqrt(disc))/aa);
+      float end=min(length(n-cameraPosition),(-bb+sqrt(disc))/aa);
+      float ds=max(0.,end-entry)/8., opticalDepth=0.;
+      for(int i=0;i<8;i++) opticalDepth+=cloudDensity(cameraPosition+ray*(entry+(float(i)+.5)*ds))*ds;
+      vAlpha*=mix(1.,max(.45,exp(-opticalDepth*.7)),uWeights.z);
+    }
+  }
   vSpark = step(.997, aSeed.w);
   vec4 mv = modelViewMatrix * vec4(p, 1.);
   gl_Position = projectionMatrix * mv;
@@ -106,30 +127,46 @@ void main() {
 }
 `;
 
+export const cloudVertex = /* glsl */`
+varying vec3 vWorldPosition;
+void main() {
+  vWorldPosition=(modelMatrix*vec4(position,1.)).xyz;
+  gl_Position=projectionMatrix*viewMatrix*vec4(vWorldPosition,1.);
+}
+`;
+
 export const cloudFragment = /* glsl */`
 uniform float uTime;
 uniform vec3 uWeights;
-varying vec2 vUv;
-${noise}
+uniform int uCloudSteps;
+precision highp sampler3D;
+uniform sampler3D uCloudVolume;
+float cloudDensity(vec3 world) {
+  vec3 uv=world/vec3(5.8,4.2,3.6)*.5+.5;
+  uv+=sin(uv.yzx*4.+uTime*.025)*.008;
+  return texture(uCloudVolume,uv).r;
+}
+
+varying vec3 vWorldPosition;
 void main() {
-  vec2 p=(vUv-.5)*vec2(4.8,3.3);
-  float t=uTime*.018;
-  vec2 q=vec2(fbm(p*1.2+t),fbm(p*1.4+vec2(4.2,-t)));
-  float f=fbm(p*2.1+q*2.8);
-  float ridge=pow(1.-abs(f*2.-1.),3.);
-  float edge=min(min(vUv.x,vUv.y),min(1.-vUv.x,1.-vUv.y));
-  float mask=exp(-dot(p,p)*.42)*smoothstep(0.,.18,edge);
-  float clouds=smoothstep(.26,.75,f)*mask;
-  float lane=smoothstep(.36,.57,fbm(p*1.6-q*1.8));
-  vec3 cyan=vec3(.045,.27,.32), rose=vec3(.38,.12,.22), gold=vec3(.36,.22,.12);
-  vec3 color=mix(cyan,rose,smoothstep(-.9,.9,p.y+q.y-.5));
-  color=mix(color,gold,smoothstep(.6,1.6,p.x+q.x));
-  color*=clouds*ridge*(.25+lane*1.4)*1.8;
-  float strands=pow(max(0.,1.-abs(f-.48)*14.),4.);
-  color+=vec3(.15,.26,.31)*strands*mask*.08;
+  vec3 ray=normalize(vWorldPosition-cameraPosition);
+  vec3 scale=vec3(5.8,4.2,3.6), ro=cameraPosition/scale, rd=ray/scale;
+  float a=dot(rd,rd),b=dot(ro,rd),c=dot(ro,ro)-1.,disc=b*b-a*c;
+  if(disc<=0.)discard;
+  float enter=max(0.,(-b-sqrt(disc))/a),exit=(-b+sqrt(disc))/a;
+  float stepSize=(exit-enter)/float(uCloudSteps);
+  vec3 color=vec3(0.);float transmission=1.;
+  for(int i=0;i<72;i++) {
+    if(i>=uCloudSteps)break;
+    vec3 world=cameraPosition+ray*(enter+(float(i)+.5)*stepSize);
+    float density=cloudDensity(world);
+    float opacity=1.-exp(-density*stepSize*1.3);
+    vec3 tint=mix(vec3(.045,.27,.32),vec3(.38,.12,.22),smoothstep(-1.7,2.,world.y));
+    tint=mix(tint,vec3(.36,.22,.12),smoothstep(1.5,4.2,world.x));
+    color+=transmission*opacity*tint*1.8;
+    transmission*=1.-opacity;
+  }
   gl_FragColor=vec4(color*uWeights.z,1.);
-  #include <tonemapping_fragment>
-  #include <colorspace_fragment>
 }
 `;
 

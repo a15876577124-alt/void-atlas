@@ -232,3 +232,8 @@ html[lang="en"] .lang-switch .lang-en, html[lang="zh-CN"] .lang-switch .lang-zh 
   .masthead-actions { gap: 12px; }
   .wordmark { font-size: 10px; letter-spacing: .16em; }
 }
+
+@media(min-width:601px) and (min-height:501px) {
+  /* Leave the bright volume clear of the long English Nebula title. */
+  body[data-scene="nebula"] h1 { font-size: clamp(44px,4.6vw,84px); }
+}
