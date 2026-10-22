@@ -43,3 +43,24 @@ Initial image: baseline mean luminance 16.509, dark fraction .8680; B 16.361, .8
 
 Stage 2 acceptance: production build, 10/10 unit tests and 6/6 targeted desktop/mobile E2E passed. Horizon and nebula initial PNG SHA256 hashes match baseline exactly. Horizon A/B detail experiments were compared across six views; neither provides enough visible benefit to replace the existing depth-correct artwork.
 
+## Stage 3: nebula experiments and decision
+
+The camera-facing original, fixed warped surface A, direct 3D noise volume B/B2, closed shell C, cached 3D density D/D2, and half-resolution volume with full-resolution stars were compared in isolated builds. A exposes a sheet at low elevations; C stretches the texture and exposes a shell edge. B's initial excessive fog was rejected; B2 is better bounded but softer than the original. D2 opens density channels and improves spatial credibility, but still changes crisp wisps into softer clusters. The hybrid retains full-resolution stars and a 48-sample density integration; it does not yet surpass the original's clarity.
+
+Fixed-condition software-renderer timer-query medians: baseline nebula 17.4-17.6 ms, B2 182.8 ms, C 17.8 ms, D 142.5 ms, hybrid 46.8 ms. These are SwiftShader measurements, not physical-GPU benchmarks. Hybrid initial dark fraction .6379 versus baseline .6446, mean luminance 38.85 versus 28.06. More complex rendering was evaluated for visual quality, not ruled out solely for cost.
+
+After viewing the same-camera comparison, the user explicitly selected: retain the original wisps for this round; do not adopt the volume candidate. All nebula candidates remain outside the source tree.
+
+The active-scene-only shader branch experiment produced identical initial artwork but no reliable performance gain, with repeat software measurements slower. It is not adopted.
+
+Full E2E run: 26 existing/interface tests passed; 2 newly added resource tests initially counted stale JavaScript handles after context loss. The probe is corrected to inspect WebGL resource validity and wait for asynchronous context release, rather than treating missing individual delete calls as a leak.
+
+## Final acceptance
+
+The final production build, 10 unit tests and a unified 28/28 desktop/mobile-emulation E2E run passed. The 390px header was compacted after screenshot review; narrow-screen dialogs and all 36 layout states (six sizes, three scenes, two languages) were rechecked. Final artwork includes 18 actual captures. The eight-angle horizon gate, language pixel persistence, context restoration, pointer/pinch/keyboard controls and PNG export pass.
+
+The 181-second dynamic soak made 12 scene transitions with 18 bufferData uploads throughout and no GL/page errors. Post-GC heap samples grew from 9,054,357 to 10,292,368 bytes; this short observation does not establish a long-term leak or a stable heap plateau. Separate tests verify GPU resource reuse over 45 switches, zero draws while paused, and invalidated resources after renderer/context retirement.
+
+Final software-renderer measurements remain in performance/final-*.json and baseline-final-*.json. No general speedup is claimed. Physical devices/GPUs, Safari/Firefox and multi-hour endurance remain unverified.
+
+GitHub main is still 804163b. All seven live static files match the stable dist and backup by SHA256; no deployment occurred. Original and retained previews bind only 127.0.0.1 on 4174 and 4175. The external compare.html provides three-scene/six-view before/after inspection; DELIVERY.zh-CN.md contains the full report. Original HANDOFF and dependencies remain unchanged.

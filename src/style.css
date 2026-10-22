@@ -225,7 +225,7 @@ html[lang="en"] .lang-switch .lang-en, html[lang="zh-CN"] .lang-switch .lang-zh 
   .lang-switch { font-size: 10px; gap: 4px; }
   .footer-contact { display: none; }
 }
-@media(max-width:360px) {
+@media(max-width:420px) {
   .masthead { gap: 8px; }
   .masthead .asterisk, .masthead .text-button .arrow { display: none; }
   .masthead .text-button span { margin-left: 0; }
