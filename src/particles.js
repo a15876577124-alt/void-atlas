@@ -21,9 +21,14 @@ export function createParticleData(count, seed = 2311) {
       galaxy[t + 1] = cr * cosTheta * .48;
       galaxy[t + 2] = cr * Math.sqrt(1 - cosTheta * cosTheta) * Math.sin(phi);
     } else {
-      galaxy[t] = Math.cos(angle) * r;
-      galaxy[t + 1] = normal() * (.035 + (1 - r / 5.3) * .11);
-      galaxy[t + 2] = Math.sin(angle) * r;
+      // Correlated arm irregularity preserves the seeded stream of the other scenes.
+      const warp = .08 * Math.sin(r * 2.1) + .035 * Math.sin(r * 5.2);
+      const radius = r + .13 * Math.sin(r * 4.4 + arm * .9) * (r / 5.3);
+      const branch = !diffuse && i % 7 === 0 ? .16 * Math.sin(r * 1.6) : 0;
+      galaxy[t] = Math.cos(angle + warp + branch) * radius;
+      galaxy[t + 1] = normal() * (.055 + (1 - r / 5.3) * .17);
+      galaxy[t + 1] += Math.sin(angle * 2. + r) * .06 * (r / 5.3) ** 2;
+      galaxy[t + 2] = Math.sin(angle + warp + branch) * radius;
     }
     const ha = random() * Math.PI * 2, hr = 1.15 + Math.pow(random(), 1.8) * 4;
     horizon[t] = Math.cos(ha) * hr;

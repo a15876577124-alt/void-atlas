@@ -32,3 +32,14 @@ The active production distribution is preserved; all development builds and test
 Fixed the quality label lookup, decorative span selectors, and narrow-screen Field Notes access. Added tests/interface.spec.js. Production build and 10 unit tests passed before interruption; the saved targeted E2E report confirms 6/6 passed (desktop and mobile emulation). Recovery rechecked GitHub main and backup connectivity, then captured eight UI screenshots and three artwork frames. All three initial artwork frames have identical luminance metrics to baseline. No scene source was changed in this stage.
 
 Recovery on 2026-10-22 found no live project tests or servers; previews were restarted on loopback ports 4174/4175. Evidence remains outside the project.
+
+## Stage 2: galaxy candidate selection
+
+Before shader changes, the extended horizon test passed on desktop and emulated mobile across 79, 60, 30, 10, 0, -10, -60 and -79 degree elevations. Its near/far assertions remain unchanged.
+
+A corrected arm handedness and fragmented dust with extra thickness. B additionally introduces correlated arm meanders, sparse branches, mild radial density variation and a small outer warp. Six fixed camera captures were made for each. B was selected for clearer coherent stellar/dust arms and greater side-view depth. The 76,000-particle horizon, nebula and seed arrays are byte-identical in both candidates. Budgets, background, core distribution, camera, exposure and other scenes remain unchanged.
+
+Initial image: baseline mean luminance 16.509, dark fraction .8680; B 16.361, .8925. This is retained black space, not a global dimming layer. Software-renderer timer-query median: baseline 11.146 ms, A 11.212 ms, B 11.428 ms; all 3 draws/frame. Single controlled samples indicate a small cost, not a hardware FPS claim. Captures and performance JSON are in the external review directory.
+
+Stage 2 acceptance: production build, 10/10 unit tests and 6/6 targeted desktop/mobile E2E passed. Horizon and nebula initial PNG SHA256 hashes match baseline exactly. Horizon A/B detail experiments were compared across six views; neither provides enough visible benefit to replace the existing depth-correct artwork.
+

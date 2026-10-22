@@ -75,9 +75,14 @@ void main() {
   vec2 p=(vUv-.5)*14.;
   float r=length(p),a=atan(p.y,p.x);
   float grain=fbm(p*3.1);
-  float arms=pow(.5+.5*cos(a*4.-r*4.56+uTime*.03+(grain-.5)*.8),5.);
+  // Plane UV Y maps to world -Z. Match the stars' handedness and orbital speed.
+  float ga=-a+uTime*.028/(.7+r*.18);
+  float warp=.08*sin(r*2.1)+.035*sin(r*5.2);
+  float phase=(ga-warp)*4.-r*4.56;
+  float arms=pow(.5+.5*cos(phase+(grain-.5)*1.6),7.);
+  float knots=smoothstep(.22,.68,grain);
   float outer=1.-smoothstep(3.6,5.6,r);
-  float dust=(arms*.55+.045)*exp(-r*.42)*outer*(.25+grain);
+  float dust=(arms*.62+.018)*exp(-r*.42)*outer*(.08+knots*1.4);
   float core=exp(-r*r*2.8)*.6;
   vec3 galaxy=mix(vec3(.20,.35,.43),vec3(.68,.44,.23),exp(-r*.9))*dust+vec3(1.,.76,.43)*core;
   float mask=smoothstep(1.1,1.3,r)*(1.-smoothstep(4.1,5.3,r));
