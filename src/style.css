@@ -25,9 +25,7 @@ button[hidden] { display: none; }
 .vignette { pointer-events: none; background: linear-gradient(90deg,#070b1066,transparent 50%),linear-gradient(0deg,#070b10de,transparent 24%,transparent 80%,#070b1040); z-index: 1; }
 .grain { pointer-events: none; z-index: 9; opacity: .035; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' d='M0 0h150v150H0z'/%3E%3C/svg%3E"); }
 .masthead { position: fixed; z-index: 3; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 30px 4%; gap: 24px; }
-.wordmark { font-size: 14px; letter-spacing: .29em; font-weight: 700; display: flex; align-items: center; white-space: nowrap; }
-.wordmark-divider { font-size: 20px; font-weight: 300; color: #9ca5ac; margin: 0 13px; }
-.asterisk { color: var(--accent); width: 26px; height: 26px; margin-left: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.wordmark { display: flex; align-items: center; }
 .arrow { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1; flex-shrink: 0; }
 .text-button .arrow { vertical-align: middle; margin-left: 12px; color: var(--accent); }
 .capture-icon { width: 16px; height: 16px; fill: none; stroke: #c7b59c; stroke-width: 1.2; }
@@ -137,9 +135,6 @@ html[lang="en"] .lang-switch .lang-en, html[lang="zh-CN"] .lang-switch .lang-zh 
 }
 @media(max-width:600px) {
   .masthead { padding: 18px 6%; gap: 12px; }
-  .wordmark { font-size: 11px; letter-spacing: .2em; }
-  .wordmark-divider { font-size: 16px; margin: 0 9px; }
-  .asterisk { font-size: 25px; margin-left: 12px; }
   .masthead .text-button { font-size: 10px; }
   .masthead:after { left: 6%; right: 6%; bottom: 7px; }
   .story { top: 17%; left: 7%; max-width: 88%; }
@@ -227,10 +222,9 @@ html[lang="en"] .lang-switch .lang-en, html[lang="zh-CN"] .lang-switch .lang-zh 
 }
 @media(max-width:420px) {
   .masthead { gap: 8px; }
-  .masthead .asterisk, .masthead .text-button .arrow { display: none; }
+  .masthead .text-button .arrow { display: none; }
   .masthead .text-button span { margin-left: 0; }
   .masthead-actions { gap: 12px; }
-  .wordmark { font-size: 10px; letter-spacing: .16em; }
 }
 
 @media(min-width:601px) and (min-height:501px) {

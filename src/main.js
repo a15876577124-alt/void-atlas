@@ -1,4 +1,6 @@
 import './style.css';
+import './brand.css';
+import { initBrand } from './brand.js';
 import { scenes, sceneFromHash } from './scenes.js';
 import { createCanvasRenderer } from './canvas-renderer.js';
 import { initialQuality, profiles, QualityGovernor } from './quality.js';
@@ -115,6 +117,7 @@ $('#retry').addEventListener('click', activateWebGL);
 
 document.querySelectorAll('.chapter').forEach(button => button.addEventListener('click', () => setScene(Number(button.dataset.scene))));
 $('.wordmark').addEventListener('click', e => { e.preventDefault(); setScene(0); });
+initBrand($('.wordmark'));
 addEventListener('hashchange', () => setScene(sceneFromHash(location.hash)));
 $('#pause').addEventListener('click', () => { paused = !paused; updateMotion(); });
 $('#reset').addEventListener('click', () => { engine.reset(); toast(t('toast.reset')); });
