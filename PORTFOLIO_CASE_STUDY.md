@@ -15,7 +15,7 @@ Do not imply employment, clients, production traffic or personal authorship of g
 
 ## Starting point and scope
 
-The initial artifact was a functional Canvas 2D study. The one-day production scope retained it, stabilized interaction, and produced one deployable Vite/Three.js application with three scenes. Audio, model loading, ray tracing and video export were excluded to protect the core experience.
+The initial artifact was a functional Canvas 2D study. The project subsequently developed into one deployable Vite/Three.js application with three scenes and an independent Canvas fallback. The approved V3 implementation is frozen at d38dc97. This description does not claim a personal development duration. Audio, external model loading and video export remain outside the delivered scope.
 
 ## Art and interaction
 
@@ -25,15 +25,15 @@ Visitors can change scenes, drag a damped camera, pinch or scroll to zoom, freez
 
 ## Engineering decisions
 
-Three particle distributions occupy one BufferGeometry. GLSL interpolates the distributions and animates positions on the GPU; the JavaScript loop changes uniforms rather than rewriting thousands of positions. The horizon and cloud treatments use procedural ShaderMaterial surfaces. Bounded DPR and particle draw ranges can adapt to observed frame cadence without reallocating geometry. Context loss switches to a separate Canvas renderer, and restoration preserves the chosen chapter.
+Three particle distributions occupy one BufferGeometry. GLSL interpolates the distributions and animates positions on the GPU; the JavaScript loop changes uniforms rather than rewriting thousands of positions. The horizon uses depth-tested ShaderMaterial surfaces. The V3 nebula ray-marches a procedural three-dimensional density texture into a reusable cloud render target and composites it with full-resolution stars. Bounded DPR and particle draw ranges can adapt to observed frame cadence without reallocating geometry. Context loss switches to a separate Canvas renderer, and restoration preserves the chosen chapter.
 
-The nebula is a layered visual approximation. The horizon is designed rather than physically simulated. Keeping those distinctions explicit is part of presenting the work honestly.
+The nebula has genuine three-dimensional density and view-dependent integration, with finite resolution and approximate star attenuation; it is not a full scattering simulation. The horizon remains an artistic rather than relativistic simulation. Keeping those distinctions explicit is part of presenting the work honestly.
 
 ## Evidence
 
-Local production-build tests and actual captured scenes are in [verification](docs/VERIFICATION.md). [Frame-cadence data](docs/PERFORMANCE.md) comes from software-rendered headless Chromium; it is not a physical phone benchmark. GitHub Actions is configured but remote CI execution and a public deployment are not claimed.
+Current V3 evidence includes 12 unit tests, 32 E2E tests, matched-angle captures, bilingual layouts and physical RTX 4060 timing. See [V3 verification](docs/V3_ROUND2.md), [release instructions and screenshots](docs/RELEASE.md), and the latest GitHub Actions run for its independent status. Earlier [frame-cadence data](docs/PERFORMANCE.md) is historical software-renderer evidence. Mobile emulation is not a physical phone benchmark.
 
-- Public project URL: **TODO after an authenticated deployment is validated**
+- Existing project URL: https://void-atlas.app.workbuddy.host/ — the V3 update is prepared but **not deployed** in this release task.
 - Your own device/browser observations: **TODO**
 - Personal reflection / what you would improve next: **TODO**
 - Recruiter feedback, traffic or hiring outcomes: **TODO only if observed; otherwise omit**

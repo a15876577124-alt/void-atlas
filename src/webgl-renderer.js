@@ -1,8 +1,9 @@
 import * as THREE from 'three';
+import { createNebulaVolume } from './nebula-volume.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createParticleData } from './particles.js';
 import { profiles } from './quality.js';
-import { particleVertex, particleFragment, planeVertex, diskFragment, cloudFragment, horizonVertex, horizonFragment, rimFragment, lensFragment } from './shaders.js';
+import { particleVertex, particleFragment, planeVertex, diskFragment, cloudVertex, cloudFragment, horizonVertex, horizonFragment, rimFragment, lensFragment } from './shaders.js';
 
 export function createWebGLRenderer(canvas, quality) {
   // Test before constructing Three's renderer so unsupported browsers fail quietly.
@@ -30,7 +31,7 @@ export function createWebGLRenderer(canvas, quality) {
   const uniforms = {
     uTime: { value: 0 }, uDpr: { value: 1 }, uScale: { value: 1 },
     uWeights: { value: new THREE.Vector3(1, 0, 0) },
-    uDiskView: { value: .44 },
+    uDiskView: { value: .44 }, uCloudSteps: { value: 48 },
   };
   const data = createParticleData(profiles.high.count);
   const geometry = new THREE.BufferGeometry();
@@ -57,8 +58,30 @@ export function createWebGLRenderer(canvas, quality) {
   disk.material.depthTest = true;
   disk.renderOrder = -1;
   scene.add(disk);
-  const clouds = makePlane(cloudFragment);
-  clouds.scale.set(1, .75, 1);
+  const volume = createNebulaVolume();
+  const cloudTexture = new THREE.Data3DTexture(volume.data, volume.size, volume.size, volume.size);
+  cloudTexture.format = THREE.RedFormat;
+  cloudTexture.type = THREE.UnsignedByteType;
+  cloudTexture.minFilter = cloudTexture.magFilter = THREE.LinearFilter;
+  cloudTexture.needsUpdate = true;
+  uniforms.uCloudVolume = { value: cloudTexture };
+  const cloudGeometry = new THREE.BoxGeometry(13, 10, 9);
+  const volumeCloud = new THREE.Mesh(cloudGeometry, new THREE.ShaderMaterial({
+    uniforms, vertexShader: cloudVertex, fragmentShader: cloudFragment,
+    transparent: true, depthWrite: false, depthTest: false,
+    blending: THREE.AdditiveBlending, side: THREE.BackSide,
+  }));
+  const cloudScene = new THREE.Scene();
+  cloudScene.add(volumeCloud);
+  const cloudTarget = new THREE.WebGLRenderTarget(1, 1, { type: renderer.extensions.has('EXT_color_buffer_float') || renderer.extensions.has('EXT_color_buffer_half_float') ? THREE.HalfFloatType : THREE.UnsignedByteType, depthBuffer: false });
+  const compositeGeometry = new THREE.PlaneGeometry(2, 2);
+  const clouds = new THREE.Mesh(compositeGeometry, new THREE.ShaderMaterial({
+    uniforms: { cloudMap: { value: cloudTarget.texture } },
+    vertexShader: 'varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position.xy,1.,1.);}',
+    fragmentShader: 'uniform sampler2D cloudMap; varying vec2 vUv; void main(){gl_FragColor=vec4(texture2D(cloudMap,vUv).rgb,1.);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}',
+    transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+  }));
+  clouds.frustumCulled = false;
   clouds.renderOrder = -2;
   scene.add(clouds);
   const horizonGeometry = new THREE.SphereGeometry(1.02, 96, 64);
@@ -109,6 +132,8 @@ export function createWebGLRenderer(canvas, quality) {
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, profiles[currentQuality].dpr));
     renderer.setSize(w, h, false);
+    const cloudScale = { low: .4, balanced: .5, high: .75 }[currentQuality];
+    cloudTarget.setSize(Math.max(1, Math.round(w * renderer.getPixelRatio() * cloudScale)), Math.max(1, Math.round(h * renderer.getPixelRatio() * cloudScale)));
     camera.aspect = w / h;
     camera.setViewOffset(w, h, -w * (mobile ? .04 : .145), -h * (mobile ? .07 : -.01), w, h);
     camera.updateProjectionMatrix();
@@ -118,6 +143,7 @@ export function createWebGLRenderer(canvas, quality) {
   };
   const setQuality = value => {
     currentQuality = value;
+    uniforms.uCloudSteps.value = { low: 32, balanced: 48, high: 72 }[value];
     geometry.setDrawRange(0, profiles[value].count);
     resize();
   };
@@ -126,6 +152,7 @@ export function createWebGLRenderer(canvas, quality) {
   let shaderFailure = false;
   renderer.debug.onShaderError = () => { shaderFailure = true; };
   renderer.compile(scene, camera);
+  renderer.compile(cloudScene, camera);
   if (shaderFailure) {
     dispose();
     throw new Error('A WebGL shader could not compile.');
@@ -133,7 +160,7 @@ export function createWebGLRenderer(canvas, quality) {
   function dispose() {
     controls.dispose();
     geometry.dispose(); material.dispose(); planeGeometry.dispose();
-    disk.material.dispose(); clouds.material.dispose();
+    disk.material.dispose(); clouds.material.dispose(); cloudGeometry.dispose(); cloudTexture.dispose(); volumeCloud.material.dispose(); cloudTarget.dispose(); compositeGeometry.dispose();
     horizonGeometry.dispose(); horizon.material.dispose(); rim.material.dispose();
     lensGeometry.dispose(); lens.material.dispose();
     starsGeometry.dispose(); starsMaterial.dispose(); renderer.dispose();
@@ -163,11 +190,15 @@ export function createWebGLRenderer(canvas, quality) {
       disk.visible = weights[0] + weights[1] > .001;
       clouds.visible = weights[2] > .001;
       horizon.visible = rim.visible = lens.visible = weights[1] > .001;
-      clouds.quaternion.copy(camera.quaternion);
-      clouds.position.copy(camera.position).normalize().multiplyScalar(-2);
+
       uniforms.uDiskView.value = camera.position.y / camera.position.length();
       lens.quaternion.copy(camera.quaternion);
       lens.position.copy(camera.position).normalize().multiplyScalar(-.18);
+      if (clouds.visible) {
+        renderer.setRenderTarget(cloudTarget); renderer.setClearColor(0x000000, 0);
+        renderer.render(cloudScene, camera);
+        renderer.setRenderTarget(null); renderer.setClearColor('#070b10', 1);
+      }
       renderer.render(scene, camera);
     },
   };

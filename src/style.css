@@ -44,7 +44,7 @@ h1 { font-family: Georgia,'Times New Roman',"Songti SC","Noto Serif SC","Source 
 h1 em, h2 em { font-weight: 400; color: #d9c2a6; }
 .description { font-size: 12px; line-height: 1.9; color: #b0b4b5; font-weight: 400; max-width: 310px; margin: 0; }
 .story-rule { font-size: 8px; letter-spacing: .2em; color: #8e979d; display: flex; align-items: center; gap: 12px; margin-top: 30px; }
-.story-rule span { height: 1px; width: 32px; background: #a7a59b66; }
+.story-rule>span:first-child { height: 1px; width: 32px; background: #a7a59b66; }
 .instrument-panel { position: fixed; right: 4%; top: 145px; z-index: 3; text-align: right; }
 .instrument-caption { font-size: 8px; letter-spacing: .2em; color: #818d95; }
 .tools { display: flex; gap: 17px; margin-top: 9px; }
@@ -62,7 +62,7 @@ select { color: #d8d5cc; border: 1px solid #d8d5cc33; border-radius: 0; backgrou
 .footer-top { display: flex; justify-content: space-between; align-items: center; font-size: 8px; letter-spacing: .18em; color: #a3a9a9; margin-bottom: 15px; }
 .footer-top p { margin: 0; }
 .orbit-hint { color: #89959c; display: flex; align-items: center; gap: 10px; }
-.orbit-hint span { font-size: 17px; }
+.orbit-hint>span:first-child { font-size: 17px; }
 .orbit-hint b { font-weight: 400; color: #9f8a6e; }
 .chapters { display: grid; grid-template-columns: repeat(3,1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .chapter { position: relative; display: flex; align-items: center; gap: 22px; text-align: left; border: 0; border-right: 1px solid var(--line); background: transparent; padding: 23px 7%; color: #88949d; transition: color .25s,background .25s; min-height: 85px; }
@@ -225,6 +225,15 @@ html[lang="en"] .lang-switch .lang-en, html[lang="zh-CN"] .lang-switch .lang-zh 
   .lang-switch { font-size: 10px; gap: 4px; }
   .footer-contact { display: none; }
 }
-@media(max-width:360px) {
-  .masthead #about-open { display: none; }
+@media(max-width:420px) {
+  .masthead { gap: 8px; }
+  .masthead .asterisk, .masthead .text-button .arrow { display: none; }
+  .masthead .text-button span { margin-left: 0; }
+  .masthead-actions { gap: 12px; }
+  .wordmark { font-size: 10px; letter-spacing: .16em; }
+}
+
+@media(min-width:601px) and (min-height:501px) {
+  /* Leave the bright volume clear of the long English Nebula title. */
+  body[data-scene="nebula"] h1 { font-size: clamp(44px,4.6vw,84px); }
 }

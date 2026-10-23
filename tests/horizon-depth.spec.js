@@ -30,6 +30,8 @@ async function sampleOcclusion(page, underside) {
 }
 
 test('event horizon occludes the far disk while the near disk crosses in front at side angles', async ({ page, context, isMobile }, testInfo) => {
+  // CI software rendering needs more time for all eight 140-frame damping waits.
+  if (process.env.CI) test.setTimeout(180000);
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
@@ -42,7 +44,7 @@ test('event horizon occludes the far disk while the near disk crosses in front a
   const session = isMobile ? await context.newCDPSession(page) : null;
   let elevation = Math.atan2(isMobile ? 8.2 : 5.3, isMobile ? 17.5 : 10.8);
   const samples = [];
-  for (const [name, degrees] of [['front', 60], ['oblique', 30], ['side', 10], ['edge', 0], ['underside', -10]]) {
+  for (const [name, degrees] of [['top', 79], ['front', 60], ['oblique', 30], ['side', 10], ['edge', 0], ['underside', -10], ['below', -60], ['bottom', -79]]) {
     const target = degrees * Math.PI / 180;
     const dy = (target - elevation) * viewport.height / (2 * Math.PI * .45);
     const x = isMobile ? 260 : 1120, y = isMobile ? 445 : 450;
@@ -66,8 +68,8 @@ test('event horizon occludes the far disk while the near disk crosses in front a
     const occlusion = await sampleOcclusion(page, degrees < 0);
     samples.push({ name, elevationDegrees: degrees, ...occlusion });
     await page.screenshot({ path: testInfo.outputPath(`horizon-${name}.png`) });
-    if (name === 'front') {
-      expect(occlusion.near.mean, 'face-on core remains dark').toBeLessThan(15);
+    if (['top', 'front', 'below', 'bottom'].includes(name)) {
+      expect(occlusion.near.mean, `${name}: face-on core remains dark`).toBeLessThan(15);
     }
     if (name === 'side' || name === 'underside') {
       expect(occlusion.near.brightFraction, `${name}: near disk must cross the black silhouette`).toBeGreaterThan(.12);
