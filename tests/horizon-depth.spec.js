@@ -30,6 +30,8 @@ async function sampleOcclusion(page, underside) {
 }
 
 test('event horizon occludes the far disk while the near disk crosses in front at side angles', async ({ page, context, isMobile }, testInfo) => {
+  // CI software rendering needs more time for all eight 140-frame damping waits.
+  if (process.env.CI) test.setTimeout(180000);
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
