@@ -174,7 +174,7 @@ function frame(now) {
     const ease = transition * transition * (3 - 2 * transition);
     for (let i = 0; i < 3; i++) weights[i] = startWeights[i] + (target[i] - startWeights[i]) * ease;
   }
-  engine.render(elapsed, weights);
+  engine.render(elapsed, weights, dt);
   if (engine.mode === 'webgl' && !paused && qualitySelect.value === 'auto') {
     const lower = governor.sample(rawDt, currentQuality);
     if (lower) { currentQuality = lower; engine.setQuality(lower); updateTelemetry(); toast(t('toast.detailAdjusted', { q: t(`quality.${lower}`) })); }

@@ -119,28 +119,24 @@ export function createWebGLRenderer(canvas, quality, { volume, particles: data }
   scene.add(new THREE.Points(starsGeometry, starsMaterial));
 
   let currentQuality = quality, dirty = true, lastTime = -1, previousMobile = innerWidth <= 600;
-  const viewChanged = () => { dirty = true; };
+  let zoomTarget = camera.position.distanceTo(controls.target), zoomActive = false;
+  const viewChanged = () => {
+    dirty = true;
+    if (!zoomActive) zoomTarget = camera.position.distanceTo(controls.target);
+  };
   controls.addEventListener('change', viewChanged);
   const zoom = factor => {
-    const distance = Math.max(controls.minDistance, Math.min(controls.maxDistance, camera.position.distanceTo(controls.target) / factor));
-    camera.position.sub(controls.target).normalize().multiplyScalar(distance).add(controls.target);
-    controls.update(); dirty = true;
+    zoomTarget = Math.max(controls.minDistance, Math.min(controls.maxDistance, zoomTarget / factor));
+    zoomActive = true; dirty = true;
   };
-  // OrbitControls ignores wheel events while a pointer is down. Keep mouse
-  // rotation and wheel dolly available together, using the same zoom scale.
-  let mouseOrbit = false;
-  const orbitStart = event => { if (event.pointerType === 'mouse' && event.button === 0) mouseOrbit = true; };
-  const orbitEnd = () => { mouseOrbit = false; };
+  // Intercept wheel dolly so discrete mouse notches ease toward their distance
+  // target, including while OrbitControls is handling a held pointer.
   const orbitWheel = event => {
-    if (!mouseOrbit) return;
+    if (event.ctrlKey) { zoomActive = false; return; }
     event.preventDefault(); event.stopImmediatePropagation();
     const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 100 : 1);
-    zoom(Math.pow(.95, -delta * .01 * controls.zoomSpeed));
+    zoom(Math.pow(.95, delta * .01 * controls.zoomSpeed));
   };
-  canvas.addEventListener('pointerdown', orbitStart);
-  canvas.addEventListener('pointerup', orbitEnd);
-  canvas.addEventListener('pointercancel', orbitEnd);
-  canvas.addEventListener('lostpointercapture', orbitEnd);
   canvas.addEventListener('wheel', orbitWheel, { passive: false, capture: true });
   const lastWeights = new THREE.Vector3(-1, -1, -1);
   const resize = () => {
@@ -149,10 +145,11 @@ export function createWebGLRenderer(canvas, quality, { volume, particles: data }
       const distance = Math.max(controls.minDistance, Math.min(controls.maxDistance, camera.position.length() * (mobile ? 1.6 : 1 / 1.6)));
       camera.position.normalize().multiplyScalar(distance);
       previousMobile = mobile;
+      zoomTarget = camera.position.distanceTo(controls.target); zoomActive = false;
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, profiles[currentQuality].dpr));
     renderer.setSize(w, h, false);
-    const cloudScale = { low: .4, balanced: .5, high: .75 }[currentQuality];
+    const cloudScale = { low: .4, balanced: .65, high: .85 }[currentQuality];
     cloudTarget.setSize(Math.max(1, Math.round(w * renderer.getPixelRatio() * cloudScale)), Math.max(1, Math.round(h * renderer.getPixelRatio() * cloudScale)));
     camera.aspect = w / h;
     camera.setViewOffset(w, h, -w * (mobile ? .04 : .145), -h * (mobile ? .07 : -.01), w, h);
@@ -163,7 +160,7 @@ export function createWebGLRenderer(canvas, quality, { volume, particles: data }
   };
   const setQuality = value => {
     currentQuality = value;
-    uniforms.uCloudSteps.value = { low: 32, balanced: 48, high: 72 }[value];
+    uniforms.uCloudSteps.value = { low: 32, balanced: 64, high: 96 }[value];
     geometry.setDrawRange(0, profiles[value].count);
     resize();
   };
@@ -179,10 +176,6 @@ export function createWebGLRenderer(canvas, quality, { volume, particles: data }
   }
   function dispose() {
     controls.removeEventListener('change', viewChanged);
-    canvas.removeEventListener('pointerdown', orbitStart);
-    canvas.removeEventListener('pointerup', orbitEnd);
-    canvas.removeEventListener('pointercancel', orbitEnd);
-    canvas.removeEventListener('lostpointercapture', orbitEnd);
     canvas.removeEventListener('wheel', orbitWheel, true);
     controls.dispose();
     geometry.dispose(); material.dispose(); planeGeometry.dispose();
@@ -198,12 +191,20 @@ export function createWebGLRenderer(canvas, quality, { volume, particles: data }
     get count() { return profiles[currentQuality].count; },
     resize, setQuality, dispose,
     reset() {
+      zoomActive = false;
       controls.reset();
       camera.position.set(0, innerWidth <= 600 ? 8.2 : 5.3, innerWidth <= 600 ? 17.5 : 10.8);
       controls.target.set(0, 0, 0); controls.update(); dirty = true;
     },
     zoom,
-    render(time, weights) {
+    render(time, weights, delta = 1 / 60) {
+      if (zoomActive) {
+        const current = camera.position.distanceTo(controls.target);
+        const distance = current + (zoomTarget - current) * (1 - Math.exp(-18 * delta));
+        const settled = Math.abs(zoomTarget - distance) < .002;
+        camera.position.sub(controls.target).normalize().multiplyScalar(settled ? zoomTarget : distance).add(controls.target);
+        zoomActive = !settled; dirty = true;
+      }
       const changed = controls.update();
       const nextWeights = uniforms.uWeights.value.set(...weights);
       if (!dirty && !changed && time === lastTime && nextWeights.equals(lastWeights)) return;

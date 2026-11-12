@@ -10,6 +10,16 @@ const frame = page => page.locator('#universe').evaluate(canvas => {
   for (let i = 0; i < pixels.length; i += 37) hash = Math.imul(hash ^ pixels[i], 16777619);
   return hash;
 });
+const shadowRadius = page => page.locator('#universe').evaluate(canvas => {
+  const gl = canvas.getContext('webgl2'), pixels = new Uint8Array(canvas.width * canvas.height * 4);
+  gl.readPixels(0, 0, canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+  const x = Math.round(canvas.width * .645), y = Math.round(canvas.height * .51);
+  for (let radius = 0; radius < canvas.width / 4; radius++) {
+    const i = (y * canvas.width + x + radius) * 4;
+    if (pixels[i] + pixels[i + 1] + pixels[i + 2] > 80) return radius;
+  }
+  throw new Error('The event horizon edge was not found.');
+});
 
 test('mouse orbit accepts wheel zoom before releasing the pointer', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Mouse-specific combination; touch pinch is covered by webgl.spec.js.');
@@ -19,13 +29,21 @@ test('mouse orbit accepts wheel zoom before releasing the pointer', async ({ pag
   await page.locator('#quality').selectOption('balanced');
   await settle(page);
   const still = await frame(page);
-  await page.mouse.move(1100, 500); await page.mouse.wheel(0, 200); await settle(page);
-  expect(await frame(page)).not.toBe(still);
+  const originalRadius = await shadowRadius(page);
+  await page.mouse.move(1100, 500); await page.mouse.wheel(0, 200);
+  await page.waitForTimeout(60);
+  const moving = await frame(page); expect(moving).not.toBe(still);
+  await settle(page);
+  const settled = await frame(page); expect(settled).not.toBe(moving);
+  expect(await shadowRadius(page), 'scrolling down zooms out').toBeLessThan(originalRadius);
+  await page.waitForTimeout(150); expect(await frame(page)).toBe(settled);
   await page.mouse.move(1100, 500); await page.mouse.down();
   await page.mouse.move(1000, 500, { steps: 12 }); await settle(page);
   const rotated = await frame(page);
+  const rotatedRadius = await shadowRadius(page);
   await page.mouse.wheel(0, -500); await settle(page);
   const close = await frame(page); expect(close).not.toBe(rotated);
+  expect(await shadowRadius(page), 'scrolling up zooms in during a drag').toBeGreaterThan(rotatedRadius);
   await page.mouse.wheel(0, 1000); await settle(page);
   expect(await frame(page)).not.toBe(close);
   await page.mouse.move(1100, 500, { steps: 12 }); await page.mouse.up(); await settle(page);

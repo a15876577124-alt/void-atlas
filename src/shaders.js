@@ -29,11 +29,15 @@ void main() {
   vec3 p = g * uWeights.x + h * uWeights.y + n * uWeights.z;
   vec3 gc = mix(vec3(1., .69, .39), vec3(.40, .65, .86), smoothstep(.5, 5.3, radius));
   gc = mix(gc, vec3(1., .91, .73), aSeed.x * .6);
+  float knotPhase=.6+2.65*log(1.+3.2*.85);
+  float knot=exp(-dot(position.xz-vec2(cos(knotPhase),sin(knotPhase))*3.2,position.xz-vec2(cos(knotPhase),sin(knotPhase))*3.2)*5.);
+  gc=mix(gc,vec3(.95,.48,.59),knot*.18);
   vec3 hc = mix(vec3(1., .27, .065), vec3(1., .81, .47), aSeed.x);
   vec3 nc = mix(vec3(.17, .64, .76), vec3(.88, .35, .58), smoothstep(-1.3, 1.5, aNebula.y + aSeed.x));
   vColor = gc * uWeights.x + hc * uWeights.y + nc * uWeights.z;
   vAlpha = .3 + aSeed.y * .7;
-  // Integrate only the cloud in FRONT of each star. Keep at least 45% of its light.
+  vAlpha*=mix(1.,.68+.32*smoothstep(.2,1.25,radius),uWeights.x);
+  // Integrate only the cloud in FRONT of each star; foreground stars stay crisp.
   if(uWeights.z>.001) {
     vec3 ray=normalize(n-cameraPosition), scale=vec3(5.8,4.2,3.6);
     vec3 ro=cameraPosition/scale, rd=ray/scale;
@@ -43,7 +47,7 @@ void main() {
       float end=min(length(n-cameraPosition),(-bb+sqrt(disc))/aa);
       float ds=max(0.,end-entry)/8., opticalDepth=0.;
       for(int i=0;i<8;i++) opticalDepth+=cloudDensity(cameraPosition+ray*(entry+(float(i)+.5)*ds))*ds;
-      vAlpha*=mix(1.,max(.45,exp(-opticalDepth*.7)),uWeights.z);
+      vAlpha*=mix(1.,max(.22,exp(-opticalDepth*.9)),uWeights.z);
     }
   }
   vSpark = step(.997, aSeed.w);
@@ -115,18 +119,25 @@ void main() {
   float core=exp(-r*r*2.8)*.6;
   galaxy=mix(vec3(.14,.30,.43),vec3(.68,.44,.23),exp(-r*.9))*dust+vec3(1.,.76,.43)*core;
   galaxy+=vec3(.32,.09,.12)*smoothstep(.58,.72,detail)*arms*outer*.12;
+  float knotPhase=.6+2.65*log(1.+3.2*.85);
+  vec2 knotPosition=vec2(cos(knotPhase),sin(knotPhase))*3.2;
+  galaxy+=vec3(.10,.012,.025)*exp(-dot(world-knotPosition,world-knotPosition)*14.)*smoothstep(.25,.65,detail);
   }
   vec3 horizon=vec3(0.);
   if(uWeights.y>.001) {
-  float mask=smoothstep(1.1,1.3,r)*(1.-smoothstep(4.1,5.3,r));
   float orbit=a+uTime*.17/(.4+r*.2);
   vec2 flow=vec2(cos(orbit),sin(orbit))*r;
-  float turbulence=fbm(vec2(r*44.,sin(orbit)*7.+cos(orbit)*3.)+fbm(flow*.8)*1.5);
-  float filaments=smoothstep(.22,.70,turbulence);
-  float brightSide=.82+.26*cos(orbit-.7);
+  float structure=fbm(flow*.95+vec2(uTime*.025,0.));
+  float mask=smoothstep(1.1,1.3,r)*(1.-smoothstep(3.8+structure*.6,4.8+structure*.8,r));
+  float shear=orbit+1.4*log(max(r,1.));
+  vec2 stretched=vec2(cos(shear),sin(shear))*r;
+  float turbulence=fbm(stretched*3.5);
+  float filaments=smoothstep(.24,.72,fbm(stretched*12.));
+  float streams=pow(smoothstep(.18,.72,turbulence),1.4);
+  float brightSide=.55+.85*pow(.5+.5*cos(orbit-.7),2.);
   float heat=exp(-max(0.,r-1.25)*1.15)*mask;
-  horizon=mix(vec3(.74,.19,.045),vec3(1.,.70,.31),exp(-max(0.,r-1.25)*1.5));
-  horizon*=heat*(.18+filaments*.65)*brightSide;
+  horizon=mix(vec3(.82,.23,.045),vec3(1.,.83,.56),exp(-max(0.,r-1.25)*1.5));
+  horizon*=heat*(.13+streams*1.2+filaments*.15)*brightSide;
   }
   vec3 color=galaxy*uWeights.x+horizon*uWeights.y;
   gl_FragColor=vec4(color,1.);
@@ -164,15 +175,17 @@ void main() {
   float enter=max(0.,(-b-sqrt(disc))/a),exit=(-b+sqrt(disc))/a;
   float stepSize=(exit-enter)/float(uCloudSteps);
   vec3 color=vec3(0.);float transmission=1.;
-  for(int i=0;i<72;i++) {
+  for(int i=0;i<96;i++) {
     if(i>=uCloudSteps)break;
     vec3 world=cameraPosition+ray*(enter+(float(i)+.5)*stepSize);
     float density=cloudDensity(world);
     density*=smoothstep(.08,.45,density);
+    float lightDensity=cloudDensity(world+vec3(.18,.24,.12));
+    float edge=smoothstep(.025,.28,max(0.,density-lightDensity));
     float opacity=1.-exp(-density*stepSize*1.1);
     vec3 tint=mix(vec3(.045,.27,.32),vec3(.38,.12,.22),smoothstep(-1.7,2.,world.y));
     tint=mix(tint,vec3(.36,.22,.12),smoothstep(1.5,4.2,world.x));
-    color+=transmission*opacity*tint*2.5;
+    color+=transmission*opacity*tint*(1.05+edge*2.8);
     transmission*=1.-opacity;
   }
   gl_FragColor=vec4(color*uWeights.z,1.);
@@ -232,7 +245,8 @@ void main() {
   // viewed from underneath. This is an artistic lens image, not ray tracing.
   float inclination=1.-smoothstep(.15,.85,abs(uDiskView));
   float r=length(p), a=atan(p.y,p.x);
-  float band=exp(-pow((r-1.19)*15.,2.));
+  float arcRadius=1.19+.17*smoothstep(.2,.95,abs(p.y)/max(r,.001));
+  float band=exp(-pow((r-arcRadius)*11.,2.));
   float above=smoothstep(-.12,.12,uDiskView);
   float upper=smoothstep(.03,.7,p.y), lower=smoothstep(.03,.7,-p.y);
   float farArc=mix(lower,upper,above);
