@@ -30,6 +30,7 @@ function renderSceneCopy() {
   const data = scenes[scene];
   const id = data.id;
   $('#headline').innerHTML = t(`scene.${id}.title`);
+  $('#description').innerHTML = t(`scene.${id}.description`);
 }
 function setScene(index, announce = true) {
   scene = (index + scenes.length) % scenes.length;

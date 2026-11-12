@@ -26,6 +26,7 @@
     </header>
     <main class="story" id="story">
       <h1 id="headline">A little closer<br />to <em>infinity.</em></h1>
+      <p class="description" id="description">Somewhere between silence and a billion stars.<br />A small invitation to lose your sense of scale.</p>
     </main>
     <aside class="instrument-panel" aria-label="Artwork controls" data-i18n="controls.aria" data-i18n-attr="aria-label">
       <div class="tools">
@@ -44,6 +45,10 @@
         <button class="chapter" data-scene="1" aria-pressed="false"><span class="chapter-copy"><strong>Event Horizon</strong><span class="chapter-name-zh" data-i18n="scene.horizon.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
         <button class="chapter" data-scene="2" aria-pressed="false"><span class="chapter-copy"><strong>Cosmic Nebula</strong><span class="chapter-name-zh" data-i18n="scene.nebula.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
       </nav>
+      <div class="footer-contact">
+        <span data-i18n="footer.contactTitle">AVAILABLE FOR OPPORTUNITIES</span>
+        <span class="footer-contact-links"><a href="mailto:haorongli09@outlook.com">haorongli09@outlook.com</a><i aria-hidden="true">·</i><a href="mailto:haorongli09@gmail.com">haorongli09@gmail.com</a></span>
+      </div>
     </footer>
     <div class="sr-only" id="scene-announcement" role="status" aria-live="polite"></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -58,7 +63,7 @@
     </dialog>
     <dialog id="contact" aria-labelledby="contact-title">
       <form method="dialog"><button class="dialog-close" aria-label="Close contact" data-i18n="contact.close.aria" data-i18n-attr="aria-label">×</button></form>
-      <h2 id="contact-title" data-i18n="nav.contact">Contact</h2>
+      <h2 id="contact-title" data-i18n-html="contact.title">For collaborations<br />&amp; <em>opportunities.</em></h2>
       <div class="contact-list">
         <a class="contact-row contact-primary" href="mailto:haorongli09@outlook.com">
           <span class="contact-meta" data-i18n="contact.primary">Primary</span>
