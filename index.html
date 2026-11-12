@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#070b10" />
-    <meta name="description" content="Three studies of the infinite. An interactive, procedurally generated journey through a spiral galaxy, an event horizon, and a cosmic nebula." data-i18n="doc.description" data-i18n-attr="content" />
+    <meta name="description" content="Explore a spiral galaxy, an event horizon, and a cosmic nebula." data-i18n="doc.description" data-i18n-attr="content" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <title data-i18n="doc.title">VOID ATLAS — Three studies of the infinite</title>
+    <title data-i18n="doc.title">VOID ATLAS</title>
   </head>
   <body>
     <a class="skip-link" href="#scenes" data-i18n="skip">Skip to scene navigation</a>
@@ -14,10 +14,8 @@
       <canvas id="universe" aria-label="Cosmic artwork. Drag to orbit; scroll or pinch to zoom." data-i18n="universe.aria" data-i18n-attr="aria-label" tabindex="0"></canvas>
     </div>
     <div class="vignette" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
     <header class="masthead">
       <a class="wordmark" href="#galaxy" aria-label="VOID ATLAS — Spiral Galaxy" data-i18n="nav.brand" data-i18n-attr="aria-label"><svg class="brand-logo" viewBox="0 0 693.92 112" fill="currentColor" aria-hidden="true" focusable="false"><g id="lacuna-symbol" transform="translate(2 6)"><g id="lacuna-upper" class="brand-arc brand-arc-upper"><path d="M14 64C2 41 13 17 35 10C53 4 70 11 80 24L64 36C58 28 47 24 38 28C25 32 21 46 28 58Z"/></g><g id="lacuna-lower" class="brand-arc brand-arc-lower"><path d="M86 36C98 59 87 83 65 90C47 96 30 89 20 76L36 64C42 72 53 76 62 72C75 68 79 54 72 42Z"/></g></g><g transform="translate(128 20) scale(.72)"><g id="lacuna-wordmark" class="brand-letters" fill-rule="evenodd"><path data-letter="V" transform="translate(0 0)" d="M0 0H16L45 78L74 0H90L53 100H37Z"/><path data-letter="O" transform="translate(101 0)" d="M44-1C17-1 0 18 0 50S17 101 44 101S88 82 88 50S71-1 44-1ZM44 13C63 13 73 27 73 50S63 87 44 87S15 73 15 50S25 13 44 13Z"/><path data-letter="I" transform="translate(202 0)" d="M0 0H15V100H0Z"/><path data-letter="D" transform="translate(231 0)" d="M0 0H33C66 0 84 18 84 50S66 100 33 100H0ZM15 14V86H33C57 86 69 73 69 50S57 14 33 14Z"/><path data-letter="A" transform="translate(350 0)" d="M0 100L37 0H53L90 100H74L64 73H26L16 100ZM31 59H59L45 20Z"/><path data-letter="T" transform="translate(444 0)" d="M0 0H80V14H47.5V100H32.5V14H0Z"/><path data-letter="L" transform="translate(532 0)" d="M0 0H15V86H69V100H0Z"/><path data-letter="A" transform="translate(607 0)" d="M0 100L37 0H53L90 100H74L64 73H26L16 100ZM31 59H59L45 20Z"/><path data-letter="S" transform="translate(706 0)" d="M77 9L70 22C61 16 52 13 41 13C25 13 16 19 16 28C16 37 24 41 42 45C67 50 80 58 80 74C80 91 65 101 40 101C23 101 9 96 0 88L8 75C17 83 28 87 41 87C57 87 65 83 65 75C65 67 58 63 38 59C13 54 1 46 1 29C1 11 17-1 41-1C56-1 68 3 77 9Z"/></g></g></svg></a>
-      <p class="edition"><span data-i18n="edition">AN EXPERIMENT IN WONDER</span> <span>— VOL. 001</span></p>
       <div class="masthead-actions">
         <button class="text-button" id="about-open" aria-haspopup="dialog"><span data-i18n="nav.about">Field notes</span> <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
         <button class="text-button" id="contact-open" aria-haspopup="dialog"><span data-i18n="nav.contact">Contact</span> <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
@@ -27,57 +25,40 @@
       </div>
     </header>
     <main class="story" id="story">
-      <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span><span id="kicker">01 / THE ORIGIN</span></p>
       <h1 id="headline">A little closer<br />to <em>infinity.</em></h1>
-      <p class="description" id="description">Somewhere between silence and a billion stars.<br />A small invitation to lose your sense of scale.</p>
-      <div class="story-rule" aria-hidden="true"><span></span> <span data-i18n="storyRule">A STUDY OF LIGHT & MATTER</span></div>
     </main>
-    <aside class="instrument-panel" aria-label="Artwork controls">
-      <span class="instrument-caption" data-i18n="instrument.caption">MAKE IT YOUR OWN</span>
+    <aside class="instrument-panel" aria-label="Artwork controls" data-i18n="controls.aria" data-i18n-attr="aria-label">
       <div class="tools">
-        <button class="tool" id="pause" aria-pressed="false" aria-label="Pause motion"><span id="motion-icon" aria-hidden="true">Ⅱ</span><span id="motion-label">Pause</span></button>
-        <button class="tool" id="reset" aria-label="Reset camera view" data-i18n="reset.aria" data-i18n-attr="aria-label"><span aria-hidden="true">↺</span><span data-i18n="reset">Reset view</span></button>
+        <button class="tool" id="pause" aria-pressed="false" aria-label="Pause motion"><svg class="control-icon" viewBox="0 0 20 20" aria-hidden="true"><path id="motion-icon" d="M7 4v12M13 4v12" /></svg><span id="motion-label">Pause</span></button>
+        <button class="tool" id="reset" aria-label="Reset camera view" data-i18n="reset.aria" data-i18n-attr="aria-label"><svg class="control-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5a7 7 0 1 0 7-2M5 1v5h5" /></svg><span data-i18n="reset">Reset view</span></button>
         <button class="tool" id="shot" aria-label="Save frame as PNG" data-i18n="shot.aria" data-i18n-attr="aria-label"><svg class="capture-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4m6 0h4v4M3 13v4h4m6 0h4v-4" /><circle cx="10" cy="10" r="3" /></svg><span data-i18n="shot">Save frame</span></button>
       </div>
       <label class="quality-control"><span data-i18n="quality.label">Detail</span> <select id="quality" aria-label="Render quality" data-i18n="quality.aria" data-i18n-attr="aria-label"><option value="auto" data-i18n="quality.auto">Auto</option><option value="high" data-i18n="quality.high">High</option><option value="balanced" data-i18n="quality.balanced">Balanced</option><option value="low" data-i18n="quality.low">Light</option></select></label>
     </aside>
-    <div class="scene-mark" aria-hidden="true"><span id="scene-coordinate">RA 00h 42m / DEC +41°</span><i></i><span data-i18n="sceneMark">LOOK A LITTLE LONGER</span></div>
     <div class="render-status" role="status" id="render-status" aria-live="polite">Preparing the atlas…</div>
     <button class="text-button retry" id="retry" hidden><span data-i18n="retry">Try WebGL again</span> <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
     <footer class="footer">
-      <div class="footer-top"><p data-i18n="footer.tagline">THREE STUDIES OF THE INFINITE</p><p class="orbit-hint"><span aria-hidden="true">⤧</span> <span data-i18n="footer.orbit">DRAG TO ORBIT</span> <b>·</b> <span data-i18n="footer.zoom">SCROLL / PINCH TO EXPLORE</span></p></div>
+      <div class="footer-top"><p class="orbit-hint"><span data-i18n="footer.orbit">DRAG TO ORBIT</span> <b>·</b> <span data-i18n="footer.zoom">SCROLL / PINCH TO ZOOM</span></p></div>
       <nav class="chapters" id="scenes" aria-label="Cosmic scenes" data-i18n="chapters.aria" data-i18n-attr="aria-label">
-        <button class="chapter active" data-scene="0" aria-pressed="true"><span class="chapter-index">01</span><span class="chapter-copy"><span class="chapter-overline" data-i18n="scene.galaxy.overline">THE ORIGIN</span><strong>Spiral Galaxy</strong><span class="chapter-name-zh" data-i18n="scene.galaxy.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
-        <button class="chapter" data-scene="1" aria-pressed="false"><span class="chapter-index">02</span><span class="chapter-copy"><span class="chapter-overline" data-i18n="scene.horizon.overline">THE COLLAPSE</span><strong>Event Horizon</strong><span class="chapter-name-zh" data-i18n="scene.horizon.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
-        <button class="chapter" data-scene="2" aria-pressed="false"><span class="chapter-index">03</span><span class="chapter-copy"><span class="chapter-overline" data-i18n="scene.nebula.overline">THE REBIRTH</span><strong>Cosmic Nebula</strong><span class="chapter-name-zh" data-i18n="scene.nebula.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
+        <button class="chapter active" data-scene="0" aria-pressed="true"><span class="chapter-copy"><strong>Spiral Galaxy</strong><span class="chapter-name-zh" data-i18n="scene.galaxy.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
+        <button class="chapter" data-scene="1" aria-pressed="false"><span class="chapter-copy"><strong>Event Horizon</strong><span class="chapter-name-zh" data-i18n="scene.horizon.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
+        <button class="chapter" data-scene="2" aria-pressed="false"><span class="chapter-copy"><strong>Cosmic Nebula</strong><span class="chapter-name-zh" data-i18n="scene.nebula.nameZh"></span></span><svg class="chapter-arrow arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></button>
       </nav>
-      <div class="footer-contact">
-        <span class="footer-contact-title" data-i18n="footer.contactTitle">AVAILABLE FOR OPPORTUNITIES</span>
-        <span class="footer-contact-links">
-          <a href="mailto:haorongli09@outlook.com">haorongli09@outlook.com</a><i aria-hidden="true">·</i>
-          <a href="mailto:haorongli09@gmail.com">haorongli09@gmail.com</a>
-        </span>
-      </div>
-      <div class="footer-bottom"><span data-i18n="footer.bottom">PROCEDURAL ART / NO TWO MOMENTS ALIKE</span><span id="telemetry">INITIALIZING</span></div>
     </footer>
     <div class="sr-only" id="scene-announcement" role="status" aria-live="polite"></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <dialog id="about" aria-labelledby="about-title">
       <form method="dialog"><button class="dialog-close" aria-label="Close field notes" data-i18n="about.close.aria" data-i18n-attr="aria-label">×</button></form>
-      <p class="eyebrow" data-i18n="about.eyebrow">A SMALL FIELD GUIDE</p>
-      <h2 id="about-title" data-i18n-html="about.title">Made of <em>stardust.</em></h2>
-      <p data-i18n="about.p1">VOID ATLAS is a real-time, procedural artwork: three imagined encounters with matter, gravity, and light. Shapes are generated in code. No photographs, paid assets, or remote services.</p>
-      <p data-i18n="about.p2">This is an artistic interpretation, not an astrophysical simulation. Three.js powers the WebGL edition; a lighter Canvas edition keeps the experience available.</p>
+      <h2 id="about-title" data-i18n="nav.about">Field notes</h2>
       <dl><div><dt data-i18n="about.orbit">Orbit</dt><dd data-i18n="about.orbit.dd">Drag with a mouse or one finger</dd></div><div><dt data-i18n="about.zoom">Zoom</dt><dd data-i18n="about.zoom.dd">Scroll, pinch, or use + / −</dd></div><div><dt data-i18n="about.explore">Explore</dt><dd data-i18n="about.explore.dd">1 / 2 / 3 or arrow keys</dd></div><div><dt data-i18n="about.still">Be still</dt><dd data-i18n="about.still.dd">Space pauses motion; R resets the view</dd></div></dl>
-      <p class="notes-small" data-i18n="about.notes1">Reduced motion follows your system preference. You can resume deliberately. Save frame exports the artwork without interface text.</p>
+      <p class="notes-small" data-i18n="about.notes1">Motion follows your system preference. Save frame exports a PNG without interface text.</p>
+      <p class="notes-small" id="telemetry">INITIALIZING</p>
       <button class="text-button" id="lightweight"><span data-i18n="about.lightweight">Use the lightweight edition</span></button>
-      <p class="notes-small" data-i18n="about.notes2">AI-assisted design and development. All imagery is generated procedurally.</p>
       <a class="text-button" href="./prototype.html" target="_blank" rel="noopener"><span data-i18n="about.prototype">Visit the original Canvas study</span> <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16L16 4M4 4h12v12" /></svg></a>
     </dialog>
     <dialog id="contact" aria-labelledby="contact-title">
       <form method="dialog"><button class="dialog-close" aria-label="Close contact" data-i18n="contact.close.aria" data-i18n-attr="aria-label">×</button></form>
-      <p class="eyebrow" data-i18n="contact.eyebrow">CONTACT</p>
-      <h2 id="contact-title" data-i18n-html="contact.title">For collaborations<br/>& <em>opportunities.</em></h2>
+      <h2 id="contact-title" data-i18n="nav.contact">Contact</h2>
       <div class="contact-list">
         <a class="contact-row contact-primary" href="mailto:haorongli09@outlook.com">
           <span class="contact-meta" data-i18n="contact.primary">Primary</span>

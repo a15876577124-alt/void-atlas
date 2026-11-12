@@ -95,7 +95,8 @@ ${noise}
 void main() {
   vec2 p=(vUv-.5)*14.;
   float r=length(p),a=atan(p.y,p.x);
-  float grain=fbm(p*3.1);
+  vec3 galaxy=vec3(0.);
+  if(uWeights.x>.001) {
   // Plane UV Y maps to world -Z. Match the stars' handedness and orbital speed.
   float ga=-a+uTime*.028/(.7+r*.18);
   vec2 world=vec2(cos(ga),sin(ga))*r;
@@ -112,14 +113,21 @@ void main() {
   float branch=.48*exp(-spur*spur/.04)*smoothstep(2.,3.,r)*(1.-smoothstep(4.3,5.3,r));
   float dust=(arms+branch)*exp(-r*.38)*outer*smoothstep(.28,.64,detail)*.70;
   float core=exp(-r*r*2.8)*.6;
-  vec3 galaxy=mix(vec3(.14,.30,.43),vec3(.68,.44,.23),exp(-r*.9))*dust+vec3(1.,.76,.43)*core;
+  galaxy=mix(vec3(.14,.30,.43),vec3(.68,.44,.23),exp(-r*.9))*dust+vec3(1.,.76,.43)*core;
   galaxy+=vec3(.32,.09,.12)*smoothstep(.58,.72,detail)*arms*outer*.12;
+  }
+  vec3 horizon=vec3(0.);
+  if(uWeights.y>.001) {
   float mask=smoothstep(1.1,1.3,r)*(1.-smoothstep(4.1,5.3,r));
-  float lines=.65+.35*sin(r*95.+grain*5.-uTime*.5);
-  float filaments=pow(.5+.5*sin(a*5.+r*24.-uTime*.5+grain*5.),3.);
+  float orbit=a+uTime*.17/(.4+r*.2);
+  vec2 flow=vec2(cos(orbit),sin(orbit))*r;
+  float turbulence=fbm(vec2(r*44.,sin(orbit)*7.+cos(orbit)*3.)+fbm(flow*.8)*1.5);
+  float filaments=smoothstep(.22,.70,turbulence);
+  float brightSide=.82+.26*cos(orbit-.7);
   float heat=exp(-max(0.,r-1.25)*1.15)*mask;
-  vec3 horizon=mix(vec3(.74,.19,.045),vec3(1.,.70,.31),exp(-max(0.,r-1.25)*1.5));
-  horizon*=heat*(lines*.3+filaments*.3+.12);
+  horizon=mix(vec3(.74,.19,.045),vec3(1.,.70,.31),exp(-max(0.,r-1.25)*1.5));
+  horizon*=heat*(.18+filaments*.65)*brightSide;
+  }
   vec3 color=galaxy*uWeights.x+horizon*uWeights.y;
   gl_FragColor=vec4(color,1.);
   #include <tonemapping_fragment>
@@ -160,10 +168,11 @@ void main() {
     if(i>=uCloudSteps)break;
     vec3 world=cameraPosition+ray*(enter+(float(i)+.5)*stepSize);
     float density=cloudDensity(world);
-    float opacity=1.-exp(-density*stepSize*1.3);
+    density*=smoothstep(.08,.45,density);
+    float opacity=1.-exp(-density*stepSize*1.1);
     vec3 tint=mix(vec3(.045,.27,.32),vec3(.38,.12,.22),smoothstep(-1.7,2.,world.y));
     tint=mix(tint,vec3(.36,.22,.12),smoothstep(1.5,4.2,world.x));
-    color+=transmission*opacity*tint*1.8;
+    color+=transmission*opacity*tint*2.5;
     transmission*=1.-opacity;
   }
   gl_FragColor=vec4(color*uWeights.z,1.);

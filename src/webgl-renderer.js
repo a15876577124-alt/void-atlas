@@ -1,11 +1,10 @@
 import * as THREE from 'three';
-import { createNebulaVolume } from './nebula-volume.js';
+export { loadSceneData } from './load-scene-data.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { createParticleData } from './particles.js';
 import { profiles } from './quality.js';
 import { particleVertex, particleFragment, planeVertex, diskFragment, cloudVertex, cloudFragment, horizonVertex, horizonFragment, rimFragment, lensFragment } from './shaders.js';
 
-export function createWebGLRenderer(canvas, quality) {
+export function createWebGLRenderer(canvas, quality, { volume, particles: data }) {
   // Test before constructing Three's renderer so unsupported browsers fail quietly.
   const context = canvas.getContext('webgl2', { alpha: false, antialias: false, preserveDrawingBuffer: true });
   if (!context) throw new Error('WebGL 2 is not available.');
@@ -33,7 +32,6 @@ export function createWebGLRenderer(canvas, quality) {
     uWeights: { value: new THREE.Vector3(1, 0, 0) },
     uDiskView: { value: .44 }, uCloudSteps: { value: 48 },
   };
-  const data = createParticleData(profiles.high.count);
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(data.galaxy, 3));
   geometry.setAttribute('aHorizon', new THREE.BufferAttribute(data.horizon, 3));
@@ -58,7 +56,6 @@ export function createWebGLRenderer(canvas, quality) {
   disk.material.depthTest = true;
   disk.renderOrder = -1;
   scene.add(disk);
-  const volume = createNebulaVolume();
   const cloudTexture = new THREE.Data3DTexture(volume.data, volume.size, volume.size, volume.size);
   cloudTexture.format = THREE.RedFormat;
   cloudTexture.type = THREE.UnsignedByteType;
@@ -122,6 +119,29 @@ export function createWebGLRenderer(canvas, quality) {
   scene.add(new THREE.Points(starsGeometry, starsMaterial));
 
   let currentQuality = quality, dirty = true, lastTime = -1, previousMobile = innerWidth <= 600;
+  const viewChanged = () => { dirty = true; };
+  controls.addEventListener('change', viewChanged);
+  const zoom = factor => {
+    const distance = Math.max(controls.minDistance, Math.min(controls.maxDistance, camera.position.distanceTo(controls.target) / factor));
+    camera.position.sub(controls.target).normalize().multiplyScalar(distance).add(controls.target);
+    controls.update(); dirty = true;
+  };
+  // OrbitControls ignores wheel events while a pointer is down. Keep mouse
+  // rotation and wheel dolly available together, using the same zoom scale.
+  let mouseOrbit = false;
+  const orbitStart = event => { if (event.pointerType === 'mouse' && event.button === 0) mouseOrbit = true; };
+  const orbitEnd = () => { mouseOrbit = false; };
+  const orbitWheel = event => {
+    if (!mouseOrbit) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 100 : 1);
+    zoom(Math.pow(.95, -delta * .01 * controls.zoomSpeed));
+  };
+  canvas.addEventListener('pointerdown', orbitStart);
+  canvas.addEventListener('pointerup', orbitEnd);
+  canvas.addEventListener('pointercancel', orbitEnd);
+  canvas.addEventListener('lostpointercapture', orbitEnd);
+  canvas.addEventListener('wheel', orbitWheel, { passive: false, capture: true });
   const lastWeights = new THREE.Vector3(-1, -1, -1);
   const resize = () => {
     const w = innerWidth, h = innerHeight, mobile = w <= 600;
@@ -158,6 +178,12 @@ export function createWebGLRenderer(canvas, quality) {
     throw new Error('A WebGL shader could not compile.');
   }
   function dispose() {
+    controls.removeEventListener('change', viewChanged);
+    canvas.removeEventListener('pointerdown', orbitStart);
+    canvas.removeEventListener('pointerup', orbitEnd);
+    canvas.removeEventListener('pointercancel', orbitEnd);
+    canvas.removeEventListener('lostpointercapture', orbitEnd);
+    canvas.removeEventListener('wheel', orbitWheel, true);
     controls.dispose();
     geometry.dispose(); material.dispose(); planeGeometry.dispose();
     disk.material.dispose(); clouds.material.dispose(); cloudGeometry.dispose(); cloudTexture.dispose(); volumeCloud.material.dispose(); cloudTarget.dispose(); compositeGeometry.dispose();
@@ -176,11 +202,7 @@ export function createWebGLRenderer(canvas, quality) {
       camera.position.set(0, innerWidth <= 600 ? 8.2 : 5.3, innerWidth <= 600 ? 17.5 : 10.8);
       controls.target.set(0, 0, 0); controls.update(); dirty = true;
     },
-    zoom(factor) {
-      const distance = Math.max(controls.minDistance, Math.min(controls.maxDistance, camera.position.distanceTo(controls.target) / factor));
-      camera.position.sub(controls.target).normalize().multiplyScalar(distance).add(controls.target); controls.update();
-      dirty = true;
-    },
+    zoom,
     render(time, weights) {
       const changed = controls.update();
       const nextWeights = uniforms.uWeights.value.set(...weights);
