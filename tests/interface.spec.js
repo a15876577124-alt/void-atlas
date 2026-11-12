@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test('language changes preserve the paused artwork and localize every quality tier', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('void-atlas-lang', 'zh'));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/#nebula');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('body')).toHaveAttribute('data-renderer', 'webgl');
   await page.locator('#quality').selectOption('low');
   await expect(page.locator('#telemetry')).toContainText('WebGL / Light / 18,000');
@@ -24,6 +26,10 @@ test('language changes preserve the paused artwork and localize every quality ti
   await page.locator('#lang-toggle').click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('#telemetry')).toContainText('WebGL / High / 76,000');
+  await page.locator('#lang-toggle').click();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('body')).toHaveAttribute('data-scene', 'nebula');
 });
 
 test('Field Notes and Contact remain reachable in both languages on narrow screens', async ({ page }) => {
@@ -48,6 +54,9 @@ test('Field Notes and Contact remain reachable in both languages on narrow scree
       await page.locator('#contact-open').click();
       await expect(page.locator('#contact')).toBeVisible();
       await expect(page.locator('#contact a[href^="mailto:"]')).toHaveCount(2);
+      const wechat = page.locator('#contact .contact-row').filter({ hasText: lang === 'en' ? 'WeChat' : '微信' });
+      await expect(wechat).toContainText('haorongli09');
+      await expect(wechat).toBeInViewport();
       await page.keyboard.press('Escape');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }

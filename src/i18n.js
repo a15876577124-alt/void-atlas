@@ -1,5 +1,3 @@
-export const LANG_KEY = 'void-atlas-lang';
-
 export const translations = {
   en: {
     'doc.title': 'VOID ATLAS',
@@ -61,6 +59,7 @@ export const translations = {
     'contact.primary': 'Primary',
     'contact.title': 'For collaborations<br>& <em>opportunities.</em>',
     'contact.alternate': 'Alternate',
+    'contact.wechat': 'WeChat',
     'contact.close.aria': 'Close contact',
     'noscript': 'This interactive artwork needs JavaScript. Please enable it in your browser to explore the atlas.',
     'toast.reset': 'View reset.',
@@ -135,6 +134,7 @@ export const translations = {
     'contact.primary': '主要邮箱',
     'contact.title': '关于合作<br>与<em>机会。</em>',
     'contact.alternate': '备用邮箱',
+    'contact.wechat': '微信',
     'contact.close.aria': '关闭联系',
     'noscript': '这件互动艺术作品需要 JavaScript。请在浏览器中启用它，以探索这幅星图。',
     'toast.reset': '视角已重置。',
@@ -163,18 +163,9 @@ export function t(key, params) {
   return s;
 }
 
-function readStoredLang() {
-  try { return localStorage.getItem(LANG_KEY); } catch { return null; }
-}
-
-function writeStoredLang(value) {
-  try { localStorage.setItem(LANG_KEY, value); } catch { /* storage unavailable — keep switching in-session */ }
-}
-
 export function setLanguage(next, after) {
   lang = next === 'zh' ? 'zh' : 'en';
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-  writeStoredLang(lang);
   for (const el of document.querySelectorAll('[data-i18n]')) {
     if (el.hasAttribute('data-i18n-attr')) continue; // attr-translated nodes: key lives in data-i18n, text untouched
     el.textContent = t(el.dataset.i18n);
@@ -188,7 +179,6 @@ export function setLanguage(next, after) {
 }
 
 export function initI18n(after) {
-  lang = readStoredLang() === 'zh' ? 'zh' : 'en';
-  setLanguage(lang, after);
+  setLanguage('en', after);
   return lang;
 }
