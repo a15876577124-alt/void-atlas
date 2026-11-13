@@ -23,16 +23,14 @@ function updateMotion() {
   $('#pause').setAttribute('aria-pressed', String(paused));
   $('#pause').setAttribute('aria-label', paused ? t('resume.aria') : t('pause.aria'));
   $('#motion-label').textContent = paused ? t('resume') : t('pause');
-  $('#motion-icon').textContent = paused ? '▷' : 'Ⅱ';
+  $('#motion-icon').setAttribute('d', paused ? 'M5 3l11 7-11 7Z' : 'M7 4v12M13 4v12');
   document.body.dataset.paused = String(paused);
 }
 function renderSceneCopy() {
   const data = scenes[scene];
   const id = data.id;
-  $('#kicker').textContent = t(`scene.${id}.kicker`);
   $('#headline').innerHTML = t(`scene.${id}.title`);
   $('#description').innerHTML = t(`scene.${id}.description`);
-  $('#scene-coordinate').textContent = data.coordinate;
 }
 function setScene(index, announce = true) {
   scene = (index + scenes.length) % scenes.length;
@@ -41,7 +39,7 @@ function setScene(index, announce = true) {
   if (transition === 1) weights.splice(0, 3, ...target);
   renderSceneCopy();
   document.querySelectorAll('.chapter').forEach((button, i) => { button.classList.toggle('active', i === scene); button.setAttribute('aria-pressed', String(i === scene)); });
-  if (announce) $('#scene-announcement').textContent = t('scene.announce', { name: t(`scene.${data.id}.name`), overline: t(`scene.${data.id}.overline`) });
+  if (announce) $('#scene-announcement').textContent = t('scene.announce', { name: t(`scene.${data.id}.name`) });
   if (announce && !reduce.matches) {
     $('#story').getAnimations().forEach(animation => animation.cancel());
     $('#story').animate([{ opacity: .6, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500, easing: 'ease-out' });
@@ -81,10 +79,11 @@ async function activateWebGL() {
   const generation = ++rendererGeneration;
   $('#retry').disabled = true;
   try {
-    const { createWebGLRenderer } = await import('./webgl-renderer.js');
+    const { createWebGLRenderer, loadSceneData } = await import('./webgl-renderer.js');
+    const data = await loadSceneData();
     if (generation !== rendererGeneration) return;
     const previousCanvas = $('#universe'), canvas = previousCanvas.cloneNode(false);
-    const nextEngine = createWebGLRenderer(canvas, currentQuality);
+    const nextEngine = createWebGLRenderer(canvas, currentQuality, data);
     engine.dispose(); previousCanvas.replaceWith(canvas); engine = nextEngine;
     canvas.addEventListener('webglcontextlost', event => {
       event.preventDefault();
@@ -175,7 +174,7 @@ function frame(now) {
     const ease = transition * transition * (3 - 2 * transition);
     for (let i = 0; i < 3; i++) weights[i] = startWeights[i] + (target[i] - startWeights[i]) * ease;
   }
-  engine.render(elapsed, weights);
+  engine.render(elapsed, weights, dt);
   if (engine.mode === 'webgl' && !paused && qualitySelect.value === 'auto') {
     const lower = governor.sample(rawDt, currentQuality);
     if (lower) { currentQuality = lower; engine.setQuality(lower); updateTelemetry(); toast(t('toast.detailAdjusted', { q: t(`quality.${lower}`) })); }

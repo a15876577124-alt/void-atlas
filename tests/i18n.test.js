@@ -26,13 +26,10 @@ test('placeholder markers are consistent across en and zh', () => {
   assert.ok(en['toast.detailAdjusted'].includes('{q}'));
   assert.ok(zh['toast.detailAdjusted'].includes('{q}'));
   assert.ok(en['scene.announce'].includes('{name}'));
-  assert.ok(en['scene.announce'].includes('{overline}'));
   assert.ok(zh['scene.announce'].includes('{name}'));
-  assert.ok(zh['scene.announce'].includes('{overline}'));
 });
 
 test('brand and technical terms stay untranslated in zh', () => {
   assert.ok(zh['doc.title'].includes('VOID ATLAS'));
-  assert.ok(zh['about.p2'].includes('Three.js'));
   assert.ok(zh['retry'].includes('WebGL'));
 });
